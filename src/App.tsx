@@ -1,34 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import type { ReactElement } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
+import { MainLayout } from './layouts/MainLayout'
+import CartPage from './pages/CartPage'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import ProductsPage from './pages/ProductsPage'
+import AddressesPage from './pages/account/AddressesPage'
+import AfterSalePage from './pages/account/AfterSalePage'
+import OrdersPage from './pages/account/OrdersPage'
+import OverviewPage from './pages/account/OverviewPage'
+
+type AppRoute = {
+  path?: string
+  index?: boolean
+  element: ReactElement
+  meta?: { title: string; requiresAuth: boolean };
+}
+
+const publicRoutes: AppRoute[] = [
+  { index: true, element: <HomePage />, meta: { title: '首页', requiresAuth: false } },
+  { path: 'products', element: <ProductsPage />, meta: { title: '产品', requiresAuth: false } },
+  { path: 'cart', element: <CartPage />, meta: { title: '购物车', requiresAuth: false } },
+  { path: 'auth/login', element: <LoginPage />, meta: { title: '登录', requiresAuth: false } },
+]
+
+const accountRoutes: AppRoute[] = [
+  { index: true, element: <OverviewPage />, meta: { title: '个人中心', requiresAuth: true } },
+  { path: 'orders', element: <OrdersPage />, meta: { title: '我的订单', requiresAuth: true } },
+  { path: 'after-sale', element: <AfterSalePage />, meta: { title: '售后服务', requiresAuth: true } },
+  { path: 'addresses', element: <AddressesPage />, meta: { title: '地址管理', requiresAuth: true } },
+]
+
+const renderRoutes = (routes: AppRoute[]) =>
+  routes.map(({ path, index, element }) => (
+    <Route key={path ?? 'index'} path={path} index={index} element={element} />
+  ))
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Routes>
+      <Route element={<MainLayout />}>{renderRoutes(publicRoutes)}</Route>
+
+      <Route path="account" element={<MainLayout showSidebar />}>
+        {renderRoutes(accountRoutes)}
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 
