@@ -4,6 +4,7 @@ import type {
   ProductListRequest,
   ProductListResponse,
 } from '../services/types'
+import { login, refresh, register, getUserById, decodeAccessToken } from './auth'
 import { banners, categories, productDetails, products } from './data'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
@@ -11,6 +12,54 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 const sleep = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const handlers = [
+  http.post(`${API_BASE_URL}/auth/login`, async ({ request }) => {
+    const body = (await request.json()) as unknown
+    const result = login(body as any)
+    if (!result) {
+      return HttpResponse.json({ message: 'Invalid credentials' }, { status: 401 })
+    }
+    return HttpResponse.json(result)
+  }),
+
+  http.post(`${API_BASE_URL}/auth/register`, async ({ request }) => {
+    const body = (await request.json()) as unknown
+    try {
+      const result = register(body as any)
+      return HttpResponse.json(result, { status: 201 })
+    } catch (error) {
+      return HttpResponse.json({ message: 'Email already exists' }, { status: 409 })
+    }
+  }),
+
+  http.post(`${API_BASE_URL}/auth/refresh`, async ({ request }) => {
+    const body = (await request.json()) as { refreshToken?: string }
+    if (!body?.refreshToken) {
+      return HttpResponse.json({ message: 'Missing refresh token' }, { status: 400 })
+    }
+    const result = refresh(body.refreshToken)
+    if (!result) {
+      return HttpResponse.json({ message: 'Invalid refresh token' }, { status: 401 })
+    }
+    return HttpResponse.json(result)
+  }),
+
+  http.get(`${API_BASE_URL}/auth/profile`, async ({ request }) => {
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+    const token = authHeader.replace('Bearer ', '')
+    const payload = decodeAccessToken(token)
+    if (!payload) {
+      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+    const user = getUserById(payload.sub)
+    if (!user) {
+      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+    }
+    return HttpResponse.json(user)
+  }),
+
   http.get(`${API_BASE_URL}/banners`, async () => {
     await sleep()
     return HttpResponse.json(banners)

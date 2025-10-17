@@ -39,6 +39,8 @@ Environment variables are managed through `.env` files in the project root. Copy
 - `src/layouts/MainLayout.tsx` – Global layout with header, footer, sidebar.
 - `src/pages/` – Route-level pages (home, products, cart, account subsections).
 - `src/i18n/` – i18next setup and translation resources.
+- `src/store/slices/authSlice.ts` – Auth state, JWT persistence, role management.
+- `src/pages/LoginPage.tsx` & `src/pages/RegisterPage.tsx` – Sign-in/up flows with tier handling.
 
 ## Testing
 
@@ -49,3 +51,13 @@ Vitest is configured via `vite.config.ts` with a JSDOM environment and `src/setu
 - `npm run lint` / `npm run lint:fix`
 - `npm run format`
 - Husky + lint-staged are enabled after `npm run prepare` to keep commits clean.
+
+## Authentication & Roles
+
+- JWT-based auth with auto-refresh (access 15 min, refresh token persisted).
+- Tiers: **Basic**, **VIP**, **Super VIP** – guards enforce minimum tier for protected routes (e.g., After-Sale requires VIP).
+- Demo credentials (via MSW mock):
+  - `jane.basic@example.com` / `Password123!`
+  - `owen.vip@example.com` / `Password123!`
+  - `sara.super@example.com` / `Password123!`
+- Invite codes (registration): `VIP2025` upgrades to VIP, `SUPER2025` upgrades to Super VIP.

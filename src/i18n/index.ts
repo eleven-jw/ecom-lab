@@ -15,6 +15,8 @@ export const resources = {
         actions: {
           cart: 'Cart',
           login: 'Login',
+          logout: 'Sign out',
+          signUp: 'Sign up',
         },
         footer: '© {{year}} Ecom Lab. All rights reserved.',
         sidebar: {
@@ -44,9 +46,35 @@ export const resources = {
             'The cart will sync state across pages and surface detailed promotion breakdowns.',
         },
         auth: {
-          title: 'Sign In / Sign Up Coming Soon',
-          description:
-            'Form validation and JWT authentication workflows will be integrated here.',
+          signInTitle: 'Welcome back',
+          signInDescription: 'Access your orders, manage addresses, and enjoy member perks.',
+          signInCta: 'Sign in',
+          signUpTitle: 'Create your Ecom Lab account',
+          signUpDescription:
+            'Unlock curated recommendations and upgrade to VIP tiers with invite codes.',
+          signUpCta: 'Create account',
+          signInInstead: 'Sign in instead',
+          createAccount: 'Create one',
+          signInDescriptionShort: 'Access your personalised dashboard.',
+          noAccount: 'New to Ecom Lab?',
+          haveAccount: 'Already a member?',
+          emailLabel: 'Email address',
+          passwordLabel: 'Password',
+          passwordPlaceholder: 'Enter a secure password',
+          confirmPasswordLabel: 'Confirm password',
+          confirmPasswordPlaceholder: 'Re-enter your password',
+          fullNameLabel: 'Full name',
+          tierLabel: 'Membership tier',
+          inviteCodeLabel: 'VIP invite code',
+          inviteCodeHelp:
+            'Use the provided invite code to unlock VIP or Super VIP benefits during onboarding.',
+          demoAccounts:
+            'Use the following demo accounts to explore tier-based experiences:',
+          tiers: {
+            basic: 'Basic',
+            vip: 'VIP',
+            superVip: 'Super VIP',
+          },
         },
         account: {
           overview: {

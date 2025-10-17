@@ -6,36 +6,45 @@ import CartPage from './pages/CartPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import ProductsPage from './pages/ProductsPage'
+import RegisterPage from './pages/RegisterPage'
 import AddressesPage from './pages/account/AddressesPage'
 import AfterSalePage from './pages/account/AfterSalePage'
 import OrdersPage from './pages/account/OrdersPage'
 import OverviewPage from './pages/account/OverviewPage'
+import { RequireAuth } from './routes/RequireAuth'
 
 type AppRoute = {
   path?: string
   index?: boolean
   element: ReactElement
-  meta?: { title: string; requiresAuth: boolean };
+  requiresAuth?: boolean
+  minTier?: 'basic' | 'vip' | 'super_vip'
 }
 
 const publicRoutes: AppRoute[] = [
-  { index: true, element: <HomePage />, meta: { title: '首页', requiresAuth: false } },
-  { path: 'products', element: <ProductsPage />, meta: { title: '产品', requiresAuth: false } },
-  { path: 'cart', element: <CartPage />, meta: { title: '购物车', requiresAuth: false } },
-  { path: 'auth/login', element: <LoginPage />, meta: { title: '登录', requiresAuth: false } },
+  { index: true, element: <HomePage /> },
+  { path: 'products', element: <ProductsPage /> },
+  { path: 'cart', element: <CartPage /> },
+  { path: 'auth/login', element: <LoginPage /> },
+  { path: 'auth/register', element: <RegisterPage /> },
 ]
 
 const accountRoutes: AppRoute[] = [
-  { index: true, element: <OverviewPage />, meta: { title: '个人中心', requiresAuth: true } },
-  { path: 'orders', element: <OrdersPage />, meta: { title: '我的订单', requiresAuth: true } },
-  { path: 'after-sale', element: <AfterSalePage />, meta: { title: '售后服务', requiresAuth: true } },
-  { path: 'addresses', element: <AddressesPage />, meta: { title: '地址管理', requiresAuth: true } },
+  { index: true, element: <OverviewPage />, requiresAuth: true },
+  { path: 'orders', element: <OrdersPage />, requiresAuth: true },
+  { path: 'after-sale', element: <AfterSalePage />, requiresAuth: true, minTier: 'vip' },
+  { path: 'addresses', element: <AddressesPage />, requiresAuth: true },
 ]
 
 const renderRoutes = (routes: AppRoute[]) =>
-  routes.map(({ path, index, element }) => (
-    <Route key={path ?? 'index'} path={path} index={index} element={element} />
-  ))
+  routes.map(({ path, index, element, requiresAuth, minTier }) => {
+    const guardedElement = requiresAuth ? (
+      <RequireAuth minTier={minTier}>{element}</RequireAuth>
+    ) : (
+      element
+    )
+    return <Route key={path ?? 'index'} path={path} index={index} element={guardedElement} />
+  })
 
 function App() {
   return (

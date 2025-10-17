@@ -61,3 +61,36 @@ export interface ProductDetail extends Product {
   }>
   reviews: ProductReview[]
 }
+
+export type UserTier = 'basic' | 'vip' | 'super_vip'
+
+export interface UserProfile {
+  id: string
+  email: string
+  fullName: string
+  tier: UserTier
+  createdAt: string
+}
+
+export interface AuthTokens {
+  accessToken: string
+  refreshToken: string
+  expiresIn: number
+}
+
+export interface AuthResponse {
+  user: UserProfile
+  tokens: AuthTokens
+}
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface RegisterRequest {
+  email: string
+  password: string
+  fullName: string
+  inviteCode?: string
+}

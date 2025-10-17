@@ -1,8 +1,10 @@
-import { Layout, Menu } from 'antd'
+import { Layout, Menu, Tag } from 'antd'
 import type { MenuProps } from 'antd'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
+
+import { useAppSelector } from '../../store/hooks'
 
 const { Sider } = Layout
 
@@ -13,9 +15,18 @@ const PATH_TO_KEY: Record<string, string> = {
   '/account/addresses': 'account-addresses',
 }
 
+const tierRank: Record<'basic' | 'vip' | 'super_vip', number> = {
+  basic: 1,
+  vip: 2,
+  super_vip: 3,
+}
+
 export function Sidebar() {
   const location = useLocation()
   const { t } = useTranslation()
+  const auth = useAppSelector((state) => state.auth)
+  const userTier = auth.user?.tier ?? 'basic'
+  const isVipOrHigher = tierRank[userTier] >= tierRank.vip
   const items: MenuProps['items'] = useMemo(
     () => [
       {
@@ -29,8 +40,14 @@ export function Sidebar() {
       {
         key: 'account-after-sale',
         label: (
-          <Link to="/account/after-sale">{t('layout.sidebar.afterSale')}</Link>
+          <span>
+            <Link to="/account/after-sale">{t('layout.sidebar.afterSale')}</Link>
+            <Tag style={{ marginLeft: 8 }} color="gold">
+              {t('pages.auth.tiers.vip')}
+            </Tag>
+          </span>
         ),
+        disabled: !isVipOrHigher,
       },
       {
         key: 'account-addresses',
@@ -39,7 +56,7 @@ export function Sidebar() {
         ),
       },
     ],
-    [t],
+    [isVipOrHigher, t],
   )
   const selectedKey = PATH_TO_KEY[location.pathname] ?? 'account-overview'
 
