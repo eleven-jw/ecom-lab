@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# Ecom Lab Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite implementation for an international e-commerce experience. The project ships with Ant Design, RTK Query, MSW-powered mocks, React Router, and i18next out of the box.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+# Install dependencies (requires network access)
+npm install
 
-## React Compiler
+# Start the dev server (development env + MSW mocks)
+npm run dev
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Build for production
+npm run build
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Run Vitest (watch / CI)
+npm run test:watch
+npm run test
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Environment Configuration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Environment variables are managed through `.env` files in the project root. Copy `.env.example` and adjust values per environment.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| File | Purpose | Key Defaults |
+| --- | --- | --- |
+| `.env` | Shared defaults | `VITE_APP_NAME`, `VITE_ENABLE_MSW=true` |
+| `.env.development` | Dev server (`npm run dev`) | `VITE_API_BASE_URL=/api`, enables MSW worker |
+| `.env.production` | Production build/preview | `VITE_API_BASE_URL=https://api.ecom-lab.com/v1`, disables MSW |
+| `.env.test` | Vitest runs | `VITE_API_BASE_URL=http://localhost:4001/api`, MSW handled by node server |
+
+> Set `VITE_ENABLE_MSW=false` in any environment to bypass the mock service worker and connect to a live backend.
+
+## Project Structure
+
+- `src/services/api.ts` – RTK Query service definitions and generated hooks.
+- `src/mocks/` – MSW handlers + fixtures for dev/test parity.
+- `src/layouts/MainLayout.tsx` – Global layout with header, footer, sidebar.
+- `src/pages/` – Route-level pages (home, products, cart, account subsections).
+- `src/i18n/` – i18next setup and translation resources.
+
+## Testing
+
+Vitest is configured via `vite.config.ts` with a JSDOM environment and `src/setupTests.ts` bootstraps the MSW server. Use `npm run test` for CI runs or `npm run test:watch` while developing.
+
+## Linting & Formatting
+
+- `npm run lint` / `npm run lint:fix`
+- `npm run format`
+- Husky + lint-staged are enabled after `npm run prepare` to keep commits clean.
