@@ -41,6 +41,10 @@ export const resources = {
           title: 'Product Listing',
           description:
             'Filtering, sorting, and pagination capabilities will be implemented in this module.',
+          searchPlaceholder: 'Search for products, brands, and categories',
+          searchCta: 'Search',
+          filtersTitle: 'Filter Products',
+          emptyState: 'No products match your current filters yet.',
         },
         cart: {
           title: 'Shopping Cart Under Construction',
