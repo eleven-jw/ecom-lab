@@ -94,3 +94,70 @@ export interface RegisterRequest {
   fullName: string
   inviteCode?: string
 }
+
+export interface HomeCategory {
+  id: string
+  name: string
+  iconUrl?: string
+  children?: Array<{
+    id: string
+    name: string
+  }>
+}
+
+export interface HomeQuickLink {
+  id: string
+  title: string
+  description: string
+  iconUrl: string
+  href: string
+}
+
+export interface FlashSaleItem {
+  id: string
+  name: string
+  imageUrl: string
+  salePrice: number
+  originalPrice: number
+  currency: string
+  soldPercent: number
+  tag?: string
+}
+
+export interface HomeFlashSale {
+  endsAt: string
+  items: FlashSaleItem[]
+}
+
+export interface BrandSpotlight {
+  id: string
+  name: string
+  imageUrl: string
+  href: string
+  tagline?: string
+}
+
+export interface HomeFloorProduct {
+  id: string
+  name: string
+  imageUrl: string
+  price: number
+  currency: string
+  tags?: string[]
+}
+
+export interface HomeFloor {
+  id: string
+  title: string
+  subtitle: string
+  themeColor: string
+  products: HomeFloorProduct[]
+}
+
+export interface HomeContent {
+  categories: HomeCategory[]
+  quickLinks: HomeQuickLink[]
+  flashSale: HomeFlashSale
+  brands: BrandSpotlight[]
+  floors: HomeFloor[]
+}

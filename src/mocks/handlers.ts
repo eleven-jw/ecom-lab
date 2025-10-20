@@ -6,6 +6,7 @@ import type {
 } from '../services/types'
 import { login, refresh, register, getUserById, decodeAccessToken } from './auth'
 import { banners, categories, productDetails, products } from './data'
+import { createHomeContent } from './home'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
@@ -63,6 +64,11 @@ export const handlers = [
   http.get(`${API_BASE_URL}/banners`, async () => {
     await sleep()
     return HttpResponse.json(banners)
+  }),
+
+  http.get(`${API_BASE_URL}/home`, async () => {
+    await sleep(250)
+    return HttpResponse.json(createHomeContent())
   }),
 
   http.get(`${API_BASE_URL}/categories`, async () => {

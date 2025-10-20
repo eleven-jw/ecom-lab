@@ -7,6 +7,7 @@ import type {
   Banner,
   Category,
   LoginRequest,
+  HomeContent,
   Product,
   ProductDetail,
   ProductListRequest,
@@ -67,7 +68,7 @@ const baseQueryWithReauth: typeof rawBaseQuery = async (args, api, extraOptions)
 
 export const api = createApi({
   reducerPath: 'api',
-  tagTypes: ['Banner', 'Category', 'Product', 'Auth'],
+  tagTypes: ['Banner', 'Category', 'Product', 'Auth', 'Home'],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
@@ -144,6 +145,10 @@ export const api = createApi({
         { type: 'Product', id: 'PARTIAL-LIST' },
       ],
     }),
+    getHomeContent: builder.query<HomeContent, void>({
+      query: () => 'home',
+      providesTags: ['Home'],
+    }),
   }),
 })
 
@@ -156,4 +161,5 @@ export const {
   useGetProductsQuery,
   useGetProductByIdQuery,
   useUpdateProductRatingMutation,
+  useGetHomeContentQuery,
 } = api
