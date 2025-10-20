@@ -23,6 +23,17 @@ export function ProductFloor({ floor }: ProductFloorProps) {
             bordered={false}
             className="product-floor__card"
             cover={<img src={product.imageUrl} alt={product.name} loading="lazy" />}
+            onClick={() => navigate(`/products/${product.productId}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(keyboardEvent) => {
+              if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+                if (keyboardEvent.key === ' ') {
+                  keyboardEvent.preventDefault()
+                }
+                navigate(`/products/${product.productId}`)
+              }
+            }}
           >
             <Typography.Title level={5} className="product-floor__name" ellipsis={{ rows: 2 }}>
               {product.name}

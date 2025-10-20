@@ -115,6 +115,7 @@ export interface HomeQuickLink {
 
 export interface FlashSaleItem {
   id: string
+  productId: string
   name: string
   imageUrl: string
   salePrice: number
@@ -139,6 +140,7 @@ export interface BrandSpotlight {
 
 export interface HomeFloorProduct {
   id: string
+  productId: string
   name: string
   imageUrl: string
   price: number

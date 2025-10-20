@@ -31,6 +31,8 @@ export const resources = {
           title: 'Welcome to Ecom Lab',
           description:
             'Discover curated campaigns, hero banners, and personalized product highlights here.',
+          searchPlaceholder: 'Search for products, brands, and categories',
+          searchCta: 'Search',
           categoriesTitle: 'Featured Categories',
           categoriesDescription:
             'Hand-picked collections to jumpstart your shopping journey.',

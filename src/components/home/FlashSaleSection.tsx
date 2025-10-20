@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card, Progress, Typography, Tag } from 'antd'
+import { useNavigate } from 'react-router-dom'
 
 import type { HomeFlashSale } from '../../services/types'
 
@@ -39,6 +40,7 @@ export function FlashSaleSection({ flashSale }: FlashSaleSectionProps) {
   if (!flashSale.items.length) return null
 
   const [remaining, setRemaining] = useState<RemainingTime>(calculateRemaining(flashSale.endsAt))
+  const navigate = useNavigate()
 
   useEffect(() => {
     setRemaining(calculateRemaining(flashSale.endsAt))
@@ -69,7 +71,23 @@ export function FlashSaleSection({ flashSale }: FlashSaleSectionProps) {
           const discountLabel = discount > 0 ? `立省 ¥${discount}` : undefined
 
           return (
-            <Card key={item.id} bordered hoverable className="flash-sale__item">
+            <Card
+              key={item.id}
+              bordered
+              hoverable
+              className="flash-sale__item"
+              onClick={() => navigate(`/products/${item.productId}`)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(keyboardEvent) => {
+                if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+                  if (keyboardEvent.key === ' ') {
+                    keyboardEvent.preventDefault()
+                  }
+                  navigate(`/products/${item.productId}`)
+                }
+              }}
+            >
               <div className="flash-sale__image-wrapper">
                 <img src={item.imageUrl} alt={item.name} loading="lazy" />
               </div>

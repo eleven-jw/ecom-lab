@@ -6,6 +6,7 @@ import CartPage from './pages/CartPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import ProductsPage from './pages/ProductsPage'
+import ProductDetailPage from './pages/ProductDetailPage'
 import RegisterPage from './pages/RegisterPage'
 import AddressesPage from './pages/account/AddressesPage'
 import AfterSalePage from './pages/account/AfterSalePage'
@@ -23,6 +24,7 @@ type AppRoute = {
 
 const publicRoutes: AppRoute[] = [
   { index: true, element: <HomePage /> },
+  { path: 'products/:productId', element: <ProductDetailPage /> },
   { path: 'products', element: <ProductsPage /> },
   { path: 'cart', element: <CartPage /> },
   { path: 'auth/login', element: <LoginPage /> },

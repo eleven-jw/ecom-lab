@@ -96,14 +96,14 @@ const quickLinks: HomeContent['quickLinks'] = [
     title: 'ecom-lab生鲜',
     description: '冷链极速达',
     iconUrl: 'https://img.icons8.com/color/96/salmon.png',
-    href: '/products?categoryId=fresh',
+    href: '/products?categoryId=food',
   },
   {
     id: 'global',
     title: 'ecom-lab国际',
     description: '全球好物精选',
     iconUrl: 'https://img.icons8.com/color/96/globe.png',
-    href: '/products?categoryId=global',
+    href: '/products?categoryId=digital',
   },
   {
     id: 'vip',
@@ -130,8 +130,9 @@ const quickLinks: HomeContent['quickLinks'] = [
 
 const flashSaleItems: HomeContent['flashSale']['items'] = [
   {
-    id: 'flash-1',
-    name: '65英寸4K量子点电视',
+    id: 'prod-sony-oled',
+    productId: 'prod-sony-oled',
+    name: '索尼 65 寸 OLED 旗舰电视',
     imageUrl: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=600&q=80',
     salePrice: 4299,
     originalPrice: 5999,
@@ -140,7 +141,8 @@ const flashSaleItems: HomeContent['flashSale']['items'] = [
     tag: '限时抢购',
   },
   {
-    id: 'flash-2',
+    id: 'prod-iphone-16-pro',
+    productId: 'prod-iphone-16-pro',
     name: '苹果 iPhone 16 Pro 256G',
     imageUrl: 'https://images.unsplash.com/photo-1512499617640-c2f999018b72?w=600&q=80',
     salePrice: 8299,
@@ -149,7 +151,8 @@ const flashSaleItems: HomeContent['flashSale']['items'] = [
     soldPercent: 56,
   },
   {
-    id: 'flash-3',
+    id: 'prod-airfryer-5l',
+    productId: 'prod-airfryer-5l',
     name: '空气炸锅 5L 家庭版',
     imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31b?w=600&q=80',
     salePrice: 299,
@@ -159,7 +162,8 @@ const flashSaleItems: HomeContent['flashSale']['items'] = [
     tag: '爆款直降',
   },
   {
-    id: 'flash-4',
+    id: 'prod-massage-gun',
+    productId: 'prod-massage-gun',
     name: '筋膜枪 智能变速版',
     imageUrl: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600&q=80',
     salePrice: 469,
@@ -208,7 +212,8 @@ const floors: HomeContent['floors'] = [
     themeColor: '#ff4d4f',
     products: [
       {
-        id: 'floor1-1',
+        id: 'prod-sony-oled',
+        productId: 'prod-sony-oled',
         name: '索尼 65 寸 OLED 旗舰电视',
         imageUrl: 'https://images.unsplash.com/photo-1580894897200-2c1cfb5d7cd0?w=520&q=80',
         price: 9999,
@@ -216,7 +221,8 @@ const floors: HomeContent['floors'] = [
         tags: ['新品上市'],
       },
       {
-        id: 'floor1-2',
+        id: 'prod-dyson-v12',
+        productId: 'prod-dyson-v12',
         name: '戴森 V12 Detect 吸尘器',
         imageUrl: 'https://images.unsplash.com/photo-1616628182507-0ff1fcecdf2a?w=520&q=80',
         price: 4299,
@@ -224,7 +230,8 @@ const floors: HomeContent['floors'] = [
         tags: ['直降600'],
       },
       {
-        id: 'floor1-3',
+        id: 'prod-canon-eosr7',
+        productId: 'prod-canon-eosr7',
         name: '佳能 EOS R7 微单套机',
         imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=520&q=80',
         price: 7999,
@@ -232,7 +239,8 @@ const floors: HomeContent['floors'] = [
         tags: ['热销榜'],
       },
       {
-        id: 'floor1-4',
+        id: 'prod-bose-qc-ultra',
+        productId: 'prod-bose-qc-ultra',
         name: 'BOSE 智能降噪耳机 QC Ultra',
         imageUrl: 'https://images.unsplash.com/photo-1511963211024-6cefacb67f04?w=520&q=80',
         price: 2399,
@@ -247,7 +255,8 @@ const floors: HomeContent['floors'] = [
     themeColor: '#fa8c16',
     products: [
       {
-        id: 'floor2-1',
+        id: 'prod-adidas-runner',
+        productId: 'prod-adidas-runner',
         name: '阿迪达斯 透气跑鞋',
         imageUrl: 'https://images.unsplash.com/photo-1517677129300-07b130802f46?w=520&q=80',
         price: 699,
@@ -255,7 +264,8 @@ const floors: HomeContent['floors'] = [
         tags: ['热卖'],
       },
       {
-        id: 'floor2-2',
+        id: 'prod-uniqlo-airism-polo',
+        productId: 'prod-uniqlo-airism-polo',
         name: '优衣库 Airism POLO',
         imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=520&q=80',
         price: 199,
@@ -263,14 +273,16 @@ const floors: HomeContent['floors'] = [
         tags: ['必买清单'],
       },
       {
-        id: 'floor2-3',
+        id: 'prod-ck-backpack',
+        productId: 'prod-ck-backpack',
         name: 'CK 极简双肩包',
         imageUrl: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=520&q=80',
         price: 1380,
         currency: 'CNY',
       },
       {
-        id: 'floor2-4',
+        id: 'prod-rayban-aviator',
+        productId: 'prod-rayban-aviator',
         name: '雷朋 经典飞行员墨镜',
         imageUrl: 'https://images.unsplash.com/photo-1502901930015-158e722ed37b?w=520&q=80',
         price: 1199,
@@ -286,14 +298,16 @@ const floors: HomeContent['floors'] = [
     themeColor: '#13c2c2',
     products: [
       {
-        id: 'floor3-1',
+        id: 'prod-roborock-mop',
+        productId: 'prod-roborock-mop',
         name: '石头自清洁扫拖机器人',
         imageUrl: 'https://images.unsplash.com/photo-1586201375754-578c6ee0aea3?w=520&q=80',
         price: 3299,
         currency: 'CNY',
       },
       {
-        id: 'floor3-2',
+        id: 'prod-joyoung-blender',
+        productId: 'prod-joyoung-blender',
         name: '九阳 破壁料理机',
         imageUrl: 'https://images.unsplash.com/photo-1536520002442-39764a41e04d?w=520&q=80',
         price: 899,
@@ -301,14 +315,16 @@ const floors: HomeContent['floors'] = [
         tags: ['爆款推荐'],
       },
       {
-        id: 'floor3-3',
+        id: 'prod-delonghi-espresso',
+        productId: 'prod-delonghi-espresso',
         name: 'Delonghi 家用咖啡机',
         imageUrl: 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=520&q=80',
         price: 2799,
         currency: 'CNY',
       },
       {
-        id: 'floor3-4',
+        id: 'prod-nespresso-capsule',
+        productId: 'prod-nespresso-capsule',
         name: 'Nespresso 咖啡胶囊礼盒',
         imageUrl: 'https://images.unsplash.com/photo-1527169402691-feff5539e52c?w=520&q=80',
         price: 369,
