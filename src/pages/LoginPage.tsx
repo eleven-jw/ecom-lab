@@ -1,6 +1,6 @@
 import { Alert, Button, Form, Input, Typography } from 'antd'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -16,8 +16,8 @@ interface LoginFormValues {
 }
 
 const schema = yup.object({
-  email: yup.string().email('Enter a valid email').required('Email is required'),
-  password: yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
+  email: yup.string().trim().email('Enter a valid email').required('Email is required'),
+  password: yup.string().trim().min(8, 'Password must be at least 8 characters').required('Password is required'),
 })
 
 export default function LoginPage() {
@@ -29,8 +29,8 @@ export default function LoginPage() {
   const redirectPath = (location.state as { from?: string } | null)?.from ?? '/account'
 
   const {
+    control,
     handleSubmit,
-    register,
     formState: { errors },
   } = useForm<LoginFormValues>({
     defaultValues: {
@@ -47,6 +47,7 @@ export default function LoginPage() {
   }, [authStatus, navigate, redirectPath])
 
   const onSubmit = async (values: LoginFormValues) => {
+    console.log('values', values)
     try {
       await login(values).unwrap()
       navigate(redirectPath, { replace: true })
@@ -75,20 +76,40 @@ export default function LoginPage() {
       {apiErrorMessage ? (
         <Alert type="error" message={apiErrorMessage} style={{ marginBottom: 16 }} />
       ) : null}
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)} autoComplete="off">
+      <Form
+        layout="vertical"
+        onFinish={() => {
+          void handleSubmit(onSubmit)()
+        }}
+        autoComplete="off"
+      >
         <Form.Item
           label={t('pages.auth.emailLabel')}
           validateStatus={errors.email ? 'error' : undefined}
           help={errors.email?.message}
         >
-          <Input placeholder="you@example.com" {...register('email')} size="large" />
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => <Input {...field} placeholder="you@example.com" size="large" />}
+          />
         </Form.Item>
         <Form.Item
           label={t('pages.auth.passwordLabel')}
           validateStatus={errors.password ? 'error' : undefined}
           help={errors.password?.message}
         >
-          <Input.Password placeholder={t('pages.auth.passwordPlaceholder')} {...register('password')} size="large" />
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                placeholder={t('pages.auth.passwordPlaceholder')}
+                size="large"
+              />
+            )}
+          />
         </Form.Item>
         <Button type="primary" htmlType="submit" block size="large" loading={isLoading}>
           {t('pages.auth.signInCta')}

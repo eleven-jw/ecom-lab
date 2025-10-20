@@ -121,7 +121,7 @@ export default function RegisterPage() {
       {apiErrorMessage ? (
         <Alert type="error" message={apiErrorMessage} style={{ marginBottom: 16 }} />
       ) : null}
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)} autoComplete="off">
+      <Form layout="vertical" onSubmitCapture={handleSubmit(onSubmit)} autoComplete="off">
         <Form.Item
           label={t('pages.auth.fullNameLabel')}
           validateStatus={errors.fullName ? 'error' : undefined}
