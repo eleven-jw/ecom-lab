@@ -10,7 +10,7 @@ export function CategoryRail({ categories }: CategoryRailProps) {
   if (!categories.length) return null
 
   return (
-    <Card className="category-rail" bordered={false} bodyStyle={{ padding: 16 }}>
+    <Card className="category-rail" variant="borderless">
       <div className="category-rail__list">
         {categories.map((category) => {
           const children = category.children?.map((child) => child.name).join(' / ')

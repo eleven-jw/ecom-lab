@@ -20,7 +20,7 @@ export function ProductFloor({ floor }: ProductFloorProps) {
           <Card
             key={product.id}
             hoverable
-            bordered={false}
+            variant="borderless"
             className="product-floor__card"
             cover={<img src={product.imageUrl} alt={product.name} loading="lazy" />}
             onClick={() => navigate(`/products/${product.productId}`)}

@@ -10,7 +10,7 @@ export function UserGreetingCard() {
   const isAuthenticated = Boolean(user)
 
   return (
-    <Card className="user-greeting-card" bordered={false}>
+    <Card className="user-greeting-card" variant="borderless">
       <Typography.Text type="secondary">你好，</Typography.Text>
       <Typography.Title level={5} style={{ marginTop: 4 }}>
         {isAuthenticated ? user?.fullName ?? user?.email : '欢迎来到ecom-lab风格体验'}

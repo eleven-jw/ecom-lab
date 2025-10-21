@@ -17,6 +17,8 @@ import {
 } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { RegionCascader } from '../components/address/RegionCascader'
+import type { AddressFormValues } from '../components/address/AddressFormDrawer'
 import { useGetProductByIdQuery } from '../services/api'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { addAddress, selectAddress } from '../store/slices/addressSlice'
@@ -58,7 +60,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState<number>(1)
   const [addressModalOpen, setAddressModalOpen] = useState(false)
   const [addingAddress, setAddingAddress] = useState(false)
-  const [addressForm] = Form.useForm()
+  const [addressForm] = Form.useForm<AddressFormValues>()
 
   useEffect(() => {
     if (product?.skus?.length) {
@@ -136,14 +138,25 @@ export default function ProductDetailPage() {
   const handleAddAddress = async () => {
     try {
       const values = await addressForm.validateFields()
+      if (!values.region) {
+        message.error('请选择完整的省市区信息')
+        return
+      }
+
+      if (addresses.length >= 25) {
+        message.warning('地址数量已达上限（25 个）')
+        return
+      }
+
       dispatch(
         addAddress({
           label: values.label,
           recipient: values.recipient,
           phone: values.phone,
           line1: values.line1,
-          city: values.city,
-          region: values.region,
+          region: values.region.province,
+          city: values.region.city,
+          district: values.region.district,
           postalCode: values.postalCode,
           isDefault: values.isDefault ?? false,
         }),
@@ -280,7 +293,7 @@ export default function ProductDetailPage() {
               <div className="product-detail__address-card">
                 <Text>{selectedAddress.recipient}（{selectedAddress.phone}）</Text>
                 <Text type="secondary">
-                  {selectedAddress.city} {selectedAddress.region} {selectedAddress.line1}
+                  {selectedAddress.region} {selectedAddress.city} {selectedAddress.district} {selectedAddress.line1}
                 </Text>
               </div>
             ) : (
@@ -358,7 +371,7 @@ export default function ProductDetailPage() {
                     </Text>
                     <div>
                       <Text type="secondary">
-                        {address.city} {address.region} {address.line1}
+                        {address.region} {address.city} {address.district} {address.line1}
                       </Text>
                     </div>
                     {address.isDefault ? <Tag color="blue">默认</Tag> : null}
@@ -375,35 +388,73 @@ export default function ProductDetailPage() {
           </Button>
 
           {addingAddress ? (
-            <Form
-              form={addressForm}
-              layout="vertical"
-              className="product-detail__address-form"
-            >
-              <Form.Item label="标签" name="label" rules={[{ required: true, message: '请输入标签' }]}> 
-                <Input placeholder="家 / 公司" />
+            <Form form={addressForm} layout="vertical" className="product-detail__address-form">
+              <Form.Item
+                label="地址标签"
+                name="label"
+                rules={[{ required: true, message: '请输入地址标签' }]}
+              >
+                <Input placeholder="家 / 公司" allowClear maxLength={10} />
               </Form.Item>
-              <Form.Item label="收件人" name="recipient" rules={[{ required: true, message: '请输入收件人姓名' }]}> 
-                <Input />
+
+              <Space size={12} style={{ width: '100%' }}>
+                <Form.Item
+                  label="收件人"
+                  name="recipient"
+                  rules={[{ required: true, message: '请输入收件人姓名' }]}
+                  style={{ flex: 1 }}
+                >
+                  <Input placeholder="张三" allowClear maxLength={20} />
+                </Form.Item>
+                <Form.Item
+                  label="联系电话"
+                  name="phone"
+                  rules={[
+                    { required: true, message: '请输入联系电话' },
+                    { pattern: /^1[3-9]\d{9}$/, message: '请输入规范的中国大陆手机号' },
+                  ]}
+                  style={{ flex: 1 }}
+                >
+                  <Input placeholder="11 位手机号" allowClear maxLength={11} />
+                </Form.Item>
+              </Space>
+
+              <Form.Item
+                label="所在地区"
+                name="region"
+                rules={[{ required: true, message: '请选择省 / 市 / 区' }]}
+              >
+                <RegionCascader />
               </Form.Item>
-              <Form.Item label="联系电话" name="phone" rules={[{ required: true, message: '请输入联系电话' }]}> 
-                <Input />
+
+              <Form.Item
+                label="详细地址"
+                name="line1"
+                rules={[{ required: true, message: '请输入详细地址' }]}
+              >
+                <Input.TextArea
+                  placeholder="街道、门牌号、楼层房间等"
+                  autoSize={{ minRows: 2, maxRows: 3 }}
+                  allowClear
+                  maxLength={120}
+                />
               </Form.Item>
-              <Form.Item label="详细地址" name="line1" rules={[{ required: true, message: '请输入详细地址' }]}> 
-                <Input />
+
+              <Form.Item
+                label="邮政编码"
+                name="postalCode"
+                rules={[
+                  { required: true, message: '请输入邮政编码' },
+                  { pattern: /^\d{6}$/, message: '邮政编码为 6 位数字' },
+                ]}
+              >
+                <Input placeholder="6 位邮编" allowClear maxLength={6} />
               </Form.Item>
-              <Form.Item label="城市" name="city" rules={[{ required: true, message: '请输入城市' }]}> 
-                <Input />
-              </Form.Item>
-              <Form.Item label="省份" name="region" rules={[{ required: true, message: '请输入省份' }]}> 
-                <Input />
-              </Form.Item>
-              <Form.Item label="邮编" name="postalCode" rules={[{ required: true, message: '请输入邮编' }]}> 
-                <Input />
-              </Form.Item>
+
               <Form.Item name="isDefault" valuePropName="checked">
                 <Checkbox>设为默认地址</Checkbox>
               </Form.Item>
+
               <Button type="primary" block onClick={handleAddAddress}>
                 保存地址
               </Button>

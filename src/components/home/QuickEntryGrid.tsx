@@ -18,7 +18,7 @@ export function QuickEntryGrid({ entries }: QuickEntryGridProps) {
         <Card
           key={entry.id}
           hoverable
-          bordered={false}
+          variant="borderless"
           className="quick-entry-grid__item"
           onClick={() => {
             navigate(entry.href)

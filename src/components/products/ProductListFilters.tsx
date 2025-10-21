@@ -86,8 +86,7 @@ export function ProductListFilters({
   return (
     <Card
       className={`product-filters ${collapsed ? 'product-filters--collapsed' : ''}`}
-      bordered={false}
-      bodyStyle={{ padding: 18 }}
+      variant="borderless"
     >
       <Space direction="vertical" size={12} style={{ width: '100%' }}>
         <div className="product-filters__header">

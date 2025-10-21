@@ -13,7 +13,7 @@ export function HotEventsCard({ events }: HotEventsCardProps) {
   if (!events.length) return null
 
   return (
-    <Card className="hot-events-card" bordered={false}>
+    <Card className="hot-events-card" variant="borderless">
       <Typography.Title level={5} style={{ marginBottom: 12 }}>
         热门活动
       </Typography.Title>

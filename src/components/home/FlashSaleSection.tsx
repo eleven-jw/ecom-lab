@@ -62,7 +62,7 @@ export function FlashSaleSection({ flashSale }: FlashSaleSectionProps) {
     <Card
       title={<span className="flash-sale__title">ecom-lab秒杀</span>}
       extra={<Typography.Text type="danger">{headline}</Typography.Text>}
-      bordered={false}
+      variant="borderless"
       className="flash-sale"
     >
       <div className="flash-sale__grid">

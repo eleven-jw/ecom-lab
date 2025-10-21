@@ -18,7 +18,7 @@ export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
         <Card
           key={brand.id}
           hoverable
-          bordered={false}
+          variant="borderless"
           className="featured-brands__card"
           onClick={() => navigate(brand.href)}
         >

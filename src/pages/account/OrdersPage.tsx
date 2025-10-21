@@ -56,7 +56,7 @@ export default function OrdersPage() {
             const meta = statusMeta[order.status]
             return (
               <List.Item key={order.id}>
-                <Card className="orders-page__card" bordered={false}>
+                <Card className="orders-page__card" variant="borderless">
                   <div className="orders-page__card-header">
                     <Space size={12} wrap>
                       <Typography.Text strong>订单号：{order.id}</Typography.Text>
@@ -90,7 +90,7 @@ export default function OrdersPage() {
                     <div>
                       <Typography.Text type="secondary">配送至</Typography.Text>
                       <Typography.Text>
-                        {order.address.city} {order.address.region} {order.address.line1}
+                        {order.address.region} {order.address.city} {order.address.district} {order.address.line1}
                       </Typography.Text>
                     </div>
                     <Typography.Text strong>

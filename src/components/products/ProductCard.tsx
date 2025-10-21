@@ -13,7 +13,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card
       hoverable
-      bordered={false}
+      variant="borderless"
       className="product-card"
       onClick={() => navigate(`/products/${product.id}`)}
       role="button"
