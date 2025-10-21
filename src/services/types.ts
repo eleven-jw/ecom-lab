@@ -163,3 +163,50 @@ export interface HomeContent {
   brands: BrandSpotlight[]
   floors: HomeFloor[]
 }
+
+export interface Address {
+  id: string
+  label: string
+  recipient: string
+  phone: string
+  line1: string
+  city: string
+  region: string
+  postalCode: string
+  isDefault?: boolean
+}
+
+export interface CartItem {
+  id: string
+  productId: string
+  skuId: string
+  skuLabel: string
+  name: string
+  imageUrl: string
+  unitPrice: number
+  currency: string
+  quantity: number
+}
+
+export type OrderStatus = 'pending' | 'processing' | 'fulfilled' | 'delivered'
+
+export interface OrderItem {
+  productId: string
+  name: string
+  imageUrl: string
+  skuLabel: string
+  quantity: number
+  price: number
+  currency: string
+}
+
+export interface Order {
+  id: string
+  createdAt: string
+  status: OrderStatus
+  totalAmount: number
+  currency: string
+  paymentMethod: 'wechat' | 'alipay' | 'card'
+  address: Address
+  items: OrderItem[]
+}

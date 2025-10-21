@@ -94,9 +94,11 @@ export function ProductListFilters({
           <Typography.Text strong>{t('pages.products.filtersTitle')}</Typography.Text>
           <Space size={12}>
             <Typography.Link onClick={onClear}>清空筛选</Typography.Link>
-            <Button type="text" onClick={onToggleCollapse}>
-              {collapsed ? '展开筛选' : '收起筛选'}
-            </Button>
+            {onToggleCollapse ? (
+              <Button type="text" onClick={() => onToggleCollapse()}>
+                {collapsed ? '展开筛选' : '收起筛选'}
+              </Button>
+            ) : null}
           </Space>
         </div>
 
