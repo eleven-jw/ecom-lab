@@ -100,18 +100,31 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  flex-wrap: nowrap;
 }
 
 .product-card__price {
   font-size: 18px;
   font-weight: 700;
   color: #ff4d4f;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .product-card__rating {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+}
+
+.product-card__rating .ant-rate {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.product-card__rating .ant-typography {
+  white-space: nowrap;
 }
 
 .product-card__tags {

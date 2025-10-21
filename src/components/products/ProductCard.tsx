@@ -7,6 +7,15 @@ interface ProductCardProps {
   product: Product
 }
 
+const formatCurrency = (amount: number, currency: string) => {
+  const formatter = new Intl.NumberFormat('zh-CN', {
+    minimumFractionDigits: currency === 'CNY' ? 0 : 2,
+    maximumFractionDigits: currency === 'CNY' ? 0 : 2,
+  })
+  const symbol = currency === 'CNY' ? '¥' : currency === 'USD' ? '$' : ''
+  return `${symbol}${formatter.format(amount)}${symbol ? '' : ` ${currency}`}`
+}
+
 export function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate()
 
@@ -34,7 +43,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </Typography.Paragraph>
       <div className="product-card__meta">
         <Typography.Text className="product-card__price">
-          {product.currency === 'CNY' ? `¥${product.price}` : `$${product.price}`}
+          {formatCurrency(product.price, product.currency)}
         </Typography.Text>
         {product.rating ? (
           <div className="product-card__rating">

@@ -22,7 +22,7 @@ import type { AddressFormValues } from '../components/address/AddressFormDrawer'
 import { useGetProductByIdQuery } from '../services/api'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { addAddress, selectAddress } from '../store/slices/addressSlice'
-import { addItem } from '../store/slices/cartSlice'
+import { CART_MAX_ITEMS, addItem } from '../store/slices/cartSlice'
 import { addOrder } from '../store/slices/ordersSlice'
 import './ProductDetailPage.css'
 
@@ -45,6 +45,7 @@ export default function ProductDetailPage() {
   const addresses = useAppSelector((state) => state.address.addresses)
   const selectedAddressId = useAppSelector((state) => state.address.selectedAddressId)
   const selectedAddress = addresses.find((address) => address.id === selectedAddressId)
+  const cartItems = useAppSelector((state) => state.cart.items)
 
   const {
     data: product,
@@ -86,9 +87,31 @@ export default function ProductDetailPage() {
   const stock = selectedSku?.stock ?? 0
   const maxQuantity = stock > 0 ? stock : 1
   const isOutOfStock = stock === 0
+  const cartTotalCount = useMemo(
+    () => cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0),
+    [cartItems],
+  )
 
   const handleAddToCart = () => {
     if (!product || !selectedSku || isOutOfStock) return
+
+    const existing = cartItems.find(
+      (item) => item.productId === product.id && item.skuId === selectedSku.id,
+    )
+    const existingQuantity = existing?.quantity ?? 0
+    const available = CART_MAX_ITEMS - (cartTotalCount - existingQuantity)
+
+    if (available <= existingQuantity) {
+      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      return
+    }
+
+    const addable = Math.min(quantity, available - existingQuantity)
+    if (addable <= 0) {
+      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      return
+    }
+
     dispatch(
       addItem({
         productId: product.id,
@@ -98,10 +121,11 @@ export default function ProductDetailPage() {
         imageUrl: product.imageUrl,
         unitPrice: selectedSku.price,
         currency: product.currency,
-        quantity,
+        quantity: addable,
       }),
     )
-    message.success('已加入购物车')
+    const messageText = addable < quantity ? '部分数量未添加，已达到购物车上限' : '已加入购物车'
+    message.success(messageText)
   }
 
   const handleBuyNow = () => {

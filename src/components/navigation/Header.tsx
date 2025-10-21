@@ -1,4 +1,4 @@
-import { Layout, Menu, Typography, Button, Dropdown, Avatar, Tag, Space } from 'antd'
+import { Layout, Menu, Typography, Button, Dropdown, Avatar, Tag, Space, Badge } from 'antd'
 import type { MenuProps } from 'antd'
 import { LogoutOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons'
 import { useMemo } from 'react'
@@ -31,6 +31,7 @@ export function Header() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const auth = useAppSelector((state) => state.auth)
+  const cartCount = useAppSelector((state) => state.cart.items.reduce((acc, item) => acc + item.quantity, 0))
   const selectedKey = PATH_TO_PRIMARY_KEY[location.pathname]
   const primaryNavItems: MenuProps['items'] = useMemo(
     () => [
@@ -77,8 +78,10 @@ export function Header() {
         style={{ flex: 1, minWidth: 0 }}
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <Link to="/cart" aria-label={t('layout.actions.cart')}>
-          <ShoppingCartOutlined style={{ fontSize: 18 }} />
+        <Link to="/cart" aria-label={t('layout.actions.cart')} style={{ display: 'inline-flex' }}>
+          <Badge count={cartCount} offset={[ -2, 2 ]} showZero>
+            <ShoppingCartOutlined style={{ fontSize: 20 }} />
+          </Badge>
         </Link>
         {auth.status === 'authenticated' && auth.user ? (
           <Dropdown

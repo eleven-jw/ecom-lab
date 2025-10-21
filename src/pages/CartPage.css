@@ -1,0 +1,128 @@
+.cart-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cart-page__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 24px;
+}
+
+.cart-page__list {
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.cart-page__list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-page__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.cart-page__item-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.cart-page__item-info img {
+  width: 92px;
+  height: 92px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.cart-page__item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cart-page__item-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cart-page__sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-page__summary,
+.cart-page__address {
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.cart-page__summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cart-page__summary-total {
+  font-size: 20px;
+  color: #ff4d4f;
+}
+
+.cart-page__address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-page__address-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.cart-page__quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 1024px) {
+  .cart-page__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-page__sidebar {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .cart-page__sidebar > .ant-card {
+    flex: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .cart-page__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cart-page__item-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cart-page__sidebar {
+    flex-direction: column;
+  }
+}
