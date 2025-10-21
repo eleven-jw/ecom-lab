@@ -79,7 +79,7 @@ export function Header() {
       />
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <Link to="/cart" aria-label={t('layout.actions.cart')} style={{ display: 'inline-flex' }}>
-          <Badge count={cartCount} offset={[ -2, 2 ]} showZero>
+          <Badge count={cartCount} offset={[-2, 2]} showZero>
             <ShoppingCartOutlined style={{ fontSize: 20 }} />
           </Badge>
         </Link>

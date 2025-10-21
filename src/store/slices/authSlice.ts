@@ -58,6 +58,11 @@ const authSlice = createSlice({
       state.status = 'authenticated'
       persistAuth({ user: state.user, tokens: state.tokens })
     },
+    updateProfile(state, action: { payload: Partial<UserProfile> }) {
+      if (!state.user) return
+      state.user = { ...state.user, ...action.payload }
+      persistAuth({ user: state.user, tokens: state.tokens })
+    },
     updateTokens(state, action: { payload: AuthTokens }) {
       if (state.tokens) {
         state.tokens = action.payload
@@ -73,7 +78,7 @@ const authSlice = createSlice({
   },
 })
 
-export const { setCredentials, updateTokens, logout } = authSlice.actions
+export const { setCredentials, updateProfile, updateTokens, logout } = authSlice.actions
 export const authReducer = authSlice.reducer
 
 export type { AuthState }

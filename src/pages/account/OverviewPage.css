@@ -1,0 +1,60 @@
+.account-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.account-overview__header {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.account-overview__profile,
+.account-overview__stats,
+.account-overview__form,
+.account-overview__benefits {
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+.account-overview__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-overview__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.account-overview__content {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 24px;
+}
+
+.account-overview__form .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.account-overview__benefits .ant-list-item {
+  padding-inline: 0;
+}
+
+.account-overview__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+@media (max-width: 992px) {
+  .account-overview__content {
+    grid-template-columns: 1fr;
+  }
+}

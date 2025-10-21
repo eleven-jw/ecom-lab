@@ -70,6 +70,11 @@ export interface UserProfile {
   fullName: string
   tier: UserTier
   createdAt: string
+  phone?: string
+  location?: string
+  avatarUrl?: string
+  bio?: string
+  points?: number
 }
 
 export interface AuthTokens {

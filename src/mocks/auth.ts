@@ -32,6 +32,11 @@ const defaultUsers: StoredUser[] = [
     fullName: 'Jane Basic',
     tier: 'basic',
     createdAt: '2025-01-01T08:00:00.000Z',
+    phone: '13811112222',
+    location: '上海 · 浦东新区',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+    bio: '热爱摄影与滑雪的普通会员。',
+    points: 1200,
     password: 'Password123!'
   },
   {
@@ -40,6 +45,11 @@ const defaultUsers: StoredUser[] = [
     fullName: 'Owen VIP',
     tier: 'vip',
     createdAt: '2025-01-05T10:15:00.000Z',
+    phone: '13933334444',
+    location: '北京 · 朝阳区',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
+    bio: '跨境电商买手，热衷智能家居。',
+    points: 5600,
     password: 'Password123!'
   },
   {
@@ -48,6 +58,11 @@ const defaultUsers: StoredUser[] = [
     fullName: 'Sara Super',
     tier: 'super_vip',
     createdAt: '2025-01-08T12:30:00.000Z',
+    phone: '13755556666',
+    location: '深圳 · 南山区',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/3?v=4',
+    bio: '超级 VIP，热衷收藏限量版潮玩。',
+    points: 12800,
     password: 'Password123!'
   }
 ]
