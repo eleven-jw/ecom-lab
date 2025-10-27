@@ -24,6 +24,8 @@ export interface Product {
   reviewCount?: number
   categoryId: string
   tags?: string[]
+  sales?: number
+  createdAt?: string
 }
 
 export interface ProductListRequest {
@@ -50,14 +52,21 @@ export interface ProductReview {
   rating: number
   content: string
   createdAt: string
+  photos?: string[]
 }
 
 export interface ProductDetail extends Product {
+  attributes: Array<{
+    name: string
+    values: string[]
+  }>
   skus: Array<{
     id: string
-    label: string
+    skuLabel: string
     price: number
     stock: number
+    imageUrl?: string
+    attributes: Record<string, string>
   }>
   reviews: ProductReview[]
 }

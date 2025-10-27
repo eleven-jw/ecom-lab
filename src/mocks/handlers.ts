@@ -103,12 +103,27 @@ export const handlers = [
       )
     }
 
+    const minPrice = query.minPrice ? Number(query.minPrice) : undefined
+    const maxPrice = query.maxPrice ? Number(query.maxPrice) : undefined
+    if (typeof minPrice === 'number' && !Number.isNaN(minPrice)) {
+      filtered = filtered.filter((product) => product.price >= minPrice)
+    }
+    if (typeof maxPrice === 'number' && !Number.isNaN(maxPrice)) {
+      filtered = filtered.filter((product) => product.price <= maxPrice)
+    }
+
     if (sort === 'price-asc') {
       filtered.sort((a, b) => a.price - b.price)
     } else if (sort === 'price-desc') {
       filtered.sort((a, b) => b.price - a.price)
     } else if (sort === 'sales') {
-      filtered.sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0))
+      filtered.sort((a, b) => (b.sales ?? 0) - (a.sales ?? 0))
+    } else if (sort === 'newest') {
+      filtered.sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return bTime - aTime
+      })
     }
 
     const total = filtered.length

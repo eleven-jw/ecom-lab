@@ -1,7 +1,11 @@
-import { Card, Rate, Tag, Typography } from 'antd'
+import { Button, Card, Rate, Tag, Typography, message } from 'antd'
+import { ShoppingCartOutlined } from '@ant-design/icons'
+import { useMemo, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import type { Product } from '../../services/types'
+import { CART_MAX_ITEMS, addItem } from '../../store/slices/cartSlice'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 
 interface ProductCardProps {
   product: Product
@@ -18,6 +22,48 @@ const formatCurrency = (amount: number, currency: string) => {
 
 export function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const cartItems = useAppSelector((state) => state.cart.items)
+
+  const cartTotal = useMemo(
+    () => cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0),
+    [cartItems],
+  )
+
+  const handleQuickAdd = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+
+    const skuId = product.id
+    const existing = cartItems.find((item) => item.productId === product.id && item.skuId === skuId)
+    const existingQuantity = existing?.quantity ?? 0
+    const available = CART_MAX_ITEMS - (cartTotal - existingQuantity)
+
+    if (available <= existingQuantity) {
+      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      return
+    }
+
+    const addable = Math.max(0, Math.min(1, available - existingQuantity))
+    if (addable <= 0) {
+      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      return
+    }
+
+    dispatch(
+      addItem({
+        productId: product.id,
+        skuId,
+        skuLabel: '默认规格',
+        name: product.name,
+        imageUrl: product.imageUrl,
+        unitPrice: product.price,
+        currency: product.currency,
+        quantity: addable,
+      }),
+    )
+    message.success('已加入购物车')
+  }
 
   return (
     <Card
@@ -63,6 +109,16 @@ export function ProductCard({ product }: ProductCardProps) {
           ))}
         </div>
       ) : null}
+      <div className="product-card__actions">
+        <Button
+          type="primary"
+          icon={<ShoppingCartOutlined />}
+          block
+          onClick={handleQuickAdd}
+        >
+          加入购物车
+        </Button>
+      </div>
     </Card>
   )
 }

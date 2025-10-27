@@ -94,6 +94,8 @@ export const products: Product[] = [
     reviewCount: 245,
     categoryId: 'electronics',
     tags: ['4K OLED', 'XR 芯片'],
+    sales: 870,
+    createdAt: '2025-01-12T08:30:00.000Z',
   },
   {
     id: 'prod-dyson-v12',
@@ -107,6 +109,8 @@ export const products: Product[] = [
     reviewCount: 188,
     categoryId: 'home',
     tags: ['无线吸尘', '轻量'],
+    sales: 520,
+    createdAt: '2025-01-22T10:20:00.000Z',
   },
   {
     id: 'prod-canon-eosr7',
@@ -120,6 +124,8 @@ export const products: Product[] = [
     reviewCount: 132,
     categoryId: 'digital',
     tags: ['4K60', '双核对焦'],
+    sales: 340,
+    createdAt: '2025-02-02T09:00:00.000Z',
   },
   {
     id: 'prod-bose-qc-ultra',
@@ -133,6 +139,8 @@ export const products: Product[] = [
     reviewCount: 412,
     categoryId: 'digital',
     tags: ['主动降噪', '空间音频'],
+    sales: 610,
+    createdAt: '2025-01-18T14:15:00.000Z',
   },
   {
     id: 'prod-iphone-16-pro',
@@ -146,6 +154,8 @@ export const products: Product[] = [
     reviewCount: 528,
     categoryId: 'digital',
     tags: ['A18 Pro', '120Hz'],
+    sales: 980,
+    createdAt: '2025-02-12T12:00:00.000Z',
   },
   {
     id: 'prod-airfryer-5l',
@@ -159,6 +169,8 @@ export const products: Product[] = [
     reviewCount: 356,
     categoryId: 'home',
     tags: ['少油炸', '智能菜单'],
+    sales: 730,
+    createdAt: '2025-01-05T07:50:00.000Z',
   },
   {
     id: 'prod-massage-gun',
@@ -172,6 +184,8 @@ export const products: Product[] = [
     reviewCount: 204,
     categoryId: 'health',
     tags: ['肌肉放松'],
+    sales: 420,
+    createdAt: '2025-02-06T15:40:00.000Z',
   },
   {
     id: 'prod-roborock-mop',
@@ -185,6 +199,8 @@ export const products: Product[] = [
     reviewCount: 267,
     categoryId: 'home',
     tags: ['自清洁', '3D避障'],
+    sales: 560,
+    createdAt: '2025-01-28T11:10:00.000Z',
   },
   {
     id: 'prod-joyoung-blender',
@@ -198,6 +214,8 @@ export const products: Product[] = [
     reviewCount: 98,
     categoryId: 'home',
     tags: ['破壁', '低噪'],
+    sales: 310,
+    createdAt: '2025-01-16T08:00:00.000Z',
   },
   {
     id: 'prod-delonghi-espresso',
@@ -211,6 +229,8 @@ export const products: Product[] = [
     reviewCount: 142,
     categoryId: 'home',
     tags: ['双锅炉', '蒸汽打奶'],
+    sales: 450,
+    createdAt: '2025-02-08T10:05:00.000Z',
   },
   {
     id: 'prod-nespresso-capsule',
@@ -224,6 +244,8 @@ export const products: Product[] = [
     reviewCount: 76,
     categoryId: 'food',
     tags: ['精品拼配'],
+    sales: 260,
+    createdAt: '2025-02-11T09:30:00.000Z',
   },
   {
     id: 'prod-adidas-runner',
@@ -237,6 +259,8 @@ export const products: Product[] = [
     reviewCount: 188,
     categoryId: 'sports',
     tags: ['轻量', '缓震'],
+    sales: 540,
+    createdAt: '2025-02-04T18:12:00.000Z',
   },
   {
     id: 'prod-uniqlo-airism-polo',
@@ -250,6 +274,8 @@ export const products: Product[] = [
     reviewCount: 94,
     categoryId: 'fashion',
     tags: ['速干', '基础必备'],
+    sales: 880,
+    createdAt: '2025-02-15T08:45:00.000Z',
   },
   {
     id: 'prod-ck-backpack',
@@ -263,6 +289,8 @@ export const products: Product[] = [
     reviewCount: 56,
     categoryId: 'fashion',
     tags: ['极简', '通勤'],
+    sales: 255,
+    createdAt: '2025-01-30T13:25:00.000Z',
   },
   {
     id: 'prod-rayban-aviator',
@@ -276,6 +304,8 @@ export const products: Product[] = [
     reviewCount: 73,
     categoryId: 'fashion',
     tags: ['经典', 'UV400'],
+    sales: 310,
+    createdAt: '2025-02-09T16:20:00.000Z',
   },
   {
     id: 'prod-minimalist-backpack',
@@ -289,6 +319,8 @@ export const products: Product[] = [
     reviewCount: 128,
     categoryId: 'fashion',
     tags: ['New', 'Bestseller'],
+    sales: 620,
+    createdAt: '2025-02-18T07:55:00.000Z',
   },
   {
     id: 'prod-wireless-headphones',
@@ -302,6 +334,8 @@ export const products: Product[] = [
     reviewCount: 320,
     categoryId: 'digital',
     tags: ['Premium'],
+    sales: 890,
+    createdAt: '2025-02-07T19:40:00.000Z',
   },
   {
     id: 'prod-glow-serum',
@@ -315,31 +349,84 @@ export const products: Product[] = [
     reviewCount: 210,
     categoryId: 'beauty',
     tags: ['Vegan', 'Trending'],
+    sales: 470,
+    createdAt: '2025-02-03T08:16:00.000Z',
   },
 ]
 
 const createDetail = (
   product: Product,
-  extra?: Partial<Pick<ProductDetail, 'skus' | 'reviews'>>,
-): ProductDetail => ({
-  ...product,
-  skus:
-    extra?.skus ?? [
-      {
-        id: `${product.id}-sku-default`,
-        label: '标准款',
-        price: product.price,
-        stock: 20,
-      },
-    ],
-  reviews: extra?.reviews ?? [],
-})
+  extra?: Partial<Pick<ProductDetail, 'attributes' | 'skus' | 'reviews'>>,
+): ProductDetail => {
+  const attributes = extra?.attributes ?? [
+    {
+      name: '规格',
+      values: ['标准版'],
+    },
+  ]
 
-const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'skus' | 'reviews'>>> = {
+  const defaultAttributeSelection = attributes.reduce<Record<string, string>>((acc, attr) => {
+    acc[attr.name] = attr.values[0]
+    return acc
+  }, {})
+
+  const skus = extra?.skus ?? [
+    {
+      id: `${product.id}-standard`,
+      skuLabel: '标准版',
+      price: product.price,
+      stock: 20,
+      attributes: defaultAttributeSelection,
+    },
+  ]
+
+  return {
+    ...product,
+    attributes,
+    skus,
+    reviews: extra?.reviews ?? [],
+  }
+}
+
+const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'attributes' | 'skus' | 'reviews'>>> = {
   'prod-sony-oled': {
+    attributes: [
+      { name: '尺寸', values: ['65寸', '77寸'] },
+      { name: '套餐', values: ['标配', '影音礼盒'] },
+    ],
     skus: [
-      { id: 'prod-sony-oled-65', label: '65寸', price: 9999, stock: 12 },
-      { id: 'prod-sony-oled-77', label: '77寸', price: 16999, stock: 6 },
+      {
+        id: 'prod-sony-oled-65-standard',
+        skuLabel: '65寸 标配',
+        price: 9999,
+        stock: 12,
+        attributes: { 尺寸: '65寸', 套餐: '标配' },
+        imageUrl: 'https://images.unsplash.com/photo-1580894897200-2c1cfb5d7cd0?w=800&q=80',
+      },
+      {
+        id: 'prod-sony-oled-65-bundle',
+        skuLabel: '65寸 影音礼盒',
+        price: 10999,
+        stock: 8,
+        attributes: { 尺寸: '65寸', 套餐: '影音礼盒' },
+        imageUrl: 'https://images.unsplash.com/photo-1505691723518-36a5ac3be353?w=800&q=80',
+      },
+      {
+        id: 'prod-sony-oled-77-standard',
+        skuLabel: '77寸 标配',
+        price: 16999,
+        stock: 5,
+        attributes: { 尺寸: '77寸', 套餐: '标配' },
+        imageUrl: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?w=800&q=80',
+      },
+      {
+        id: 'prod-sony-oled-77-bundle',
+        skuLabel: '77寸 影音礼盒',
+        price: 17999,
+        stock: 3,
+        attributes: { 尺寸: '77寸', 套餐: '影音礼盒' },
+        imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80',
+      },
     ],
     reviews: [
       {
@@ -349,13 +436,52 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'skus' | '
         rating: 5,
         content: '色彩和对比度惊艳，搭配 PS5 游戏体验满分。',
         createdAt: '2025-01-12T08:30:00.000Z',
+        photos: ['https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&q=80'],
+      },
+      {
+        id: 'rev-sony-2',
+        userId: 'user-190',
+        userName: 'Alex',
+        rating: 4,
+        content: '65 寸标配已经很震撼，唯一希望物流再快点。',
+        createdAt: '2025-02-01T10:12:00.000Z',
       },
     ],
   },
   'prod-dyson-v12': {
+    attributes: [
+      { name: '颜色', values: ['曜石黑', '极光白'] },
+      { name: '组合', values: ['标准套装', '除螨加强'] },
+    ],
     skus: [
-      { id: 'prod-dyson-v12-standard', label: '标准版', price: 4299, stock: 20 },
-      { id: 'prod-dyson-v12-abs', label: '豪华版', price: 4699, stock: 10 },
+      {
+        id: 'prod-dyson-v12-black-standard',
+        skuLabel: '曜石黑 标准套装',
+        price: 4299,
+        stock: 20,
+        attributes: { 颜色: '曜石黑', 组合: '标准套装' },
+      },
+      {
+        id: 'prod-dyson-v12-black-plus',
+        skuLabel: '曜石黑 除螨加强',
+        price: 4599,
+        stock: 12,
+        attributes: { 颜色: '曜石黑', 组合: '除螨加强' },
+      },
+      {
+        id: 'prod-dyson-v12-white-standard',
+        skuLabel: '极光白 标准套装',
+        price: 4399,
+        stock: 16,
+        attributes: { 颜色: '极光白', 组合: '标准套装' },
+      },
+      {
+        id: 'prod-dyson-v12-white-plus',
+        skuLabel: '极光白 除螨加强',
+        price: 4699,
+        stock: 8,
+        attributes: { 颜色: '极光白', 组合: '除螨加强' },
+      },
     ],
     reviews: [
       {
@@ -365,13 +491,53 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'skus' | '
         rating: 5,
         content: '激光真的能照出灰尘，地板一目了然。',
         createdAt: '2025-01-18T11:05:00.000Z',
+        photos: ['https://images.unsplash.com/photo-1616628182507-0ff1fcecdf2a?w=600&q=80'],
+      },
+      {
+        id: 'rev-dyson-2',
+        userId: 'user-312',
+        userName: 'Zoe',
+        rating: 4,
+        content: '除螨刷很好用，噪音还能接受。',
+        createdAt: '2025-02-10T09:18:00.000Z',
       },
     ],
   },
   'prod-canon-eosr7': {
+    attributes: [
+      { name: '套装', values: ['机身', '18-150mm 套机', '创作者套装'] },
+      { name: '存储卡', values: ['无卡', '送 128G'] },
+    ],
     skus: [
-      { id: 'prod-canon-eosr7-body', label: 'R7 机身', price: 7999, stock: 15 },
-      { id: 'prod-canon-eosr7-kit', label: 'R7 18-150mm 套机', price: 9499, stock: 9 },
+      {
+        id: 'prod-canon-eosr7-body-nocard',
+        skuLabel: '机身 无卡',
+        price: 7999,
+        stock: 15,
+        attributes: { 套装: '机身', 存储卡: '无卡' },
+      },
+      {
+        id: 'prod-canon-eosr7-body-card',
+        skuLabel: '机身 送 128G',
+        price: 8299,
+        stock: 10,
+        attributes: { 套装: '机身', 存储卡: '送 128G' },
+      },
+      {
+        id: 'prod-canon-eosr7-kit-nocard',
+        skuLabel: '18-150mm 套机 无卡',
+        price: 9499,
+        stock: 9,
+        attributes: { 套装: '18-150mm 套机', 存储卡: '无卡' },
+      },
+      {
+        id: 'prod-canon-eosr7-creator',
+        skuLabel: '创作者套装 送 128G',
+        price: 9999,
+        stock: 6,
+        attributes: { 套装: '创作者套装', 存储卡: '送 128G' },
+        imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&q=80',
+      },
     ],
     reviews: [
       {
@@ -381,13 +547,44 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'skus' | '
         rating: 4,
         content: '对焦速度快，连拍也稳，就是握持略显小巧。',
         createdAt: '2025-01-15T14:22:00.000Z',
+        photos: ['https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&q=80'],
       },
     ],
   },
   'prod-bose-qc-ultra': {
+    attributes: [
+      { name: '颜色', values: ['曜石黑', '珍珠白'] },
+      { name: '套餐', values: ['标准装', '旅行装'] },
+    ],
     skus: [
-      { id: 'prod-bose-qc-ultra-black', label: '曜石黑', price: 2399, stock: 18 },
-      { id: 'prod-bose-qc-ultra-white', label: '珍珠白', price: 2399, stock: 12 },
+      {
+        id: 'prod-bose-qc-ultra-black-standard',
+        skuLabel: '曜石黑 标准装',
+        price: 2399,
+        stock: 18,
+        attributes: { 颜色: '曜石黑', 套餐: '标准装' },
+      },
+      {
+        id: 'prod-bose-qc-ultra-black-travel',
+        skuLabel: '曜石黑 旅行装',
+        price: 2599,
+        stock: 8,
+        attributes: { 颜色: '曜石黑', 套餐: '旅行装' },
+      },
+      {
+        id: 'prod-bose-qc-ultra-white-standard',
+        skuLabel: '珍珠白 标准装',
+        price: 2399,
+        stock: 12,
+        attributes: { 颜色: '珍珠白', 套餐: '标准装' },
+      },
+      {
+        id: 'prod-bose-qc-ultra-white-travel',
+        skuLabel: '珍珠白 旅行装',
+        price: 2599,
+        stock: 6,
+        attributes: { 颜色: '珍珠白', 套餐: '旅行装' },
+      },
     ],
     reviews: [
       {
@@ -397,13 +594,46 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'skus' | '
         rating: 5,
         content: '降噪比上一代更贴耳，空间音频看电影很沉浸。',
         createdAt: '2025-01-20T09:00:00.000Z',
+        photos: ['https://images.unsplash.com/photo-1511963211024-6cefacb67f04?w=600&q=80'],
+      },
+      {
+        id: 'rev-bose-2',
+        userId: 'user-145',
+        userName: 'Cindy',
+        rating: 5,
+        content: '旅行装收纳盒很实用，长途飞行救星。',
+        createdAt: '2025-02-14T11:05:00.000Z',
       },
     ],
   },
   'prod-iphone-16-pro': {
+    attributes: [
+      { name: '存储容量', values: ['256GB', '512GB', '1TB'] },
+      { name: '颜色', values: ['远峰蓝', '原野绿', '星曜黑'] },
+    ],
     skus: [
-      { id: 'prod-iphone-16-pro-256', label: '256GB', price: 8999, stock: 30 },
-      { id: 'prod-iphone-16-pro-512', label: '512GB', price: 9999, stock: 20 },
+      {
+        id: 'prod-iphone-16-pro-256-blue',
+        skuLabel: '256GB 远峰蓝',
+        price: 8999,
+        stock: 30,
+        attributes: { 存储容量: '256GB', 颜色: '远峰蓝' },
+        imageUrl: 'https://images.unsplash.com/photo-1512499617640-c2f999018b72?w=800&q=80',
+      },
+      {
+        id: 'prod-iphone-16-pro-512-black',
+        skuLabel: '512GB 星曜黑',
+        price: 9999,
+        stock: 20,
+        attributes: { 存储容量: '512GB', 颜色: '星曜黑' },
+      },
+      {
+        id: 'prod-iphone-16-pro-1tb-green',
+        skuLabel: '1TB 原野绿',
+        price: 11999,
+        stock: 10,
+        attributes: { 存储容量: '1TB', 颜色: '原野绿' },
+      },
     ],
     reviews: [
       {
@@ -413,6 +643,7 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'skus' | '
         rating: 5,
         content: 'A18 Pro 游戏性能强，待机时间也提升不少。',
         createdAt: '2025-01-16T18:45:00.000Z',
+        photos: ['https://images.unsplash.com/photo-1512499617640-c2f999018b72?w=600&q=80'],
       },
     ],
   },
