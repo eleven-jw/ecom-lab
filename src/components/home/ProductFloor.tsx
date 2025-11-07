@@ -1,4 +1,5 @@
 import { Card, Tag, Typography } from 'antd'
+import { useNavigate } from 'react-router-dom'
 
 import type { HomeFloor } from '../../services/types'
 
@@ -8,6 +9,7 @@ interface ProductFloorProps {
 
 export function ProductFloor({ floor }: ProductFloorProps) {
   if (!floor.products.length) return null
+  const navigate = useNavigate()
 
   return (
     <section className="product-floor">

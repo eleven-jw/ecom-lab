@@ -7,6 +7,7 @@ import {
   Form,
   Input,
   Modal,
+  Radio,
   Rate,
   Result,
   Segmented,
@@ -14,10 +15,14 @@ import {
   Space,
   Tag,
   Typography,
+  Upload,
   message,
-  Radio
 } from 'antd'
+import type { UploadFile, UploadProps } from 'antd'
+import type { RcFile } from 'antd/es/upload'
+import { PlusOutlined } from '@ant-design/icons'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { RegionCascader } from '../components/address/RegionCascader'
 import type { AddressFormValues } from '../components/address/AddressFormDrawer'
@@ -43,6 +48,17 @@ const formatCurrency = (amount: number, currency: string) => {
   return `${symbol}${amount}`
 }
 
+const MAX_REVIEW_PHOTOS = 5
+const ADDRESS_MAX = 25
+
+const fileToBase64 = (file: RcFile) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = (error) => reject(error)
+  })
+
 export default function ProductDetailPage() {
   const navigate = useNavigate()
   const { productId } = useParams<{ productId: string }>()
@@ -53,6 +69,7 @@ export default function ProductDetailPage() {
   const cartItems = useAppSelector((state) => state.cart.items)
   const orders = useAppSelector((state) => state.orders.orders)
   const auth = useAppSelector((state) => state.auth)
+  const { t } = useTranslation()
 
   const {
     data: product,
@@ -68,9 +85,13 @@ export default function ProductDetailPage() {
   const [addressModalOpen, setAddressModalOpen] = useState(false)
   const [addingAddress, setAddingAddress] = useState(false)
   const [addressForm] = Form.useForm<AddressFormValues>()
-  const [reviewForm] = Form.useForm<{ rating: number; content: string; photos?: string }>()
+  const [reviewForm] = Form.useForm<{ rating: number; content: string }>()
   const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all')
   const [reviews, setReviews] = useState<ProductReview[]>(product?.reviews ?? [])
+  const [reviewUploads, setReviewUploads] = useState<UploadFile[]>([])
+  const [previewImage, setPreviewImage] = useState<string>()
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewTitle, setPreviewTitle] = useState<string>()
 
   useEffect(() => {
     if (product?.skus?.length) {
@@ -111,18 +132,18 @@ export default function ProductDetailPage() {
   const displayPrice = matchedSku?.price ?? product?.price ?? 0
   const displayImage = matchedSku?.imageUrl ?? product?.imageUrl ?? ''
 
-  const ratingText = useMemo(() => {
-    if (!reviews.length && !product?.rating) return null
-    const average = reviews.length
-      ? reviews.reduce((accumulator, review) => accumulator + review.rating, 0) / reviews.length
-      : product?.rating ?? 0
-    const base = average.toFixed(1)
-    const count = reviews.length || product?.reviewCount
-    if (count) {
-      return `${base}（${count} 条评价）`
+  const averageRating = useMemo(() => {
+    if (!reviews.length) {
+      return product?.rating ?? 0
     }
-    return base
-  }, [product?.rating, product?.reviewCount, reviews])
+    const total = reviews.reduce((accumulator, review) => accumulator + review.rating, 0)
+    return total / reviews.length
+  }, [product?.rating, reviews])
+
+  const totalReviewCount = useMemo(
+    () => reviews.length || product?.reviewCount || 0,
+    [product?.reviewCount, reviews.length],
+  )
 
   const positiveCount = useMemo(
     () => reviews.filter((review) => review.rating >= 4).length,
@@ -143,6 +164,21 @@ export default function ProductDetailPage() {
     return reviews
   }, [reviews, reviewFilter])
 
+  const reviewFilterOptions = useMemo(
+    () => [
+      { label: t('pages.productDetail.filters.all'), value: 'all' },
+      {
+        label: t('pages.productDetail.filters.positive', { count: positiveCount }),
+        value: 'positive',
+      },
+      {
+        label: t('pages.productDetail.filters.withPhotos', { count: photoCount }),
+        value: 'withPhotos',
+      },
+    ],
+    [photoCount, positiveCount, t],
+  )
+
   const hasPurchased = useMemo(() => {
     if (!product?.id) return false
     return orders.some((order) => order.items.some((item) => item.productId === product.id))
@@ -151,6 +187,52 @@ export default function ProductDetailPage() {
   const hasReviewed = auth.user ? reviews.some((review) => review.userId === auth.user.id) : false
   const canReview =
     auth.status === 'authenticated' && Boolean(auth.user) && hasPurchased && !hasReviewed
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview && file.originFileObj) {
+      file.preview = await fileToBase64(file.originFileObj as RcFile)
+    }
+    setPreviewImage((file.url ?? (file.preview as string)) ?? undefined)
+    setPreviewOpen(true)
+    setPreviewTitle(file.name || file.url || t('pages.productDetail.reviewForm.photosLabel'))
+  }
+
+  const handleReviewBeforeUpload: UploadProps['beforeUpload'] = async (file) => {
+    if (reviewUploads.length >= MAX_REVIEW_PHOTOS) {
+      message.warning(t('components.upload.limitReached', { max: MAX_REVIEW_PHOTOS }))
+      return Upload.LIST_IGNORE
+    }
+    try {
+      const base64 = await fileToBase64(file as RcFile)
+      setReviewUploads((previous) => {
+        const filtered = previous.filter((item) => item.uid !== file.uid)
+        return [
+          ...filtered,
+          {
+            uid: file.uid,
+            name: file.name,
+            status: 'done',
+            url: base64,
+          },
+        ]
+      })
+    } catch (error) {
+      message.error(t('components.upload.error'))
+    }
+    return false
+  }
+
+  const handleReviewRemove: UploadProps['onRemove'] = (file) => {
+    setReviewUploads((previous) => previous.filter((item) => item.uid !== file.uid))
+    return true
+  }
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>{t('components.upload.add')}</div>
+    </div>
+  )
 
   const handleAddToCart = () => {
     if (!product || !matchedSku || isOutOfStock) return
@@ -162,13 +244,13 @@ export default function ProductDetailPage() {
     const available = CART_MAX_ITEMS - (cartTotal - existingQuantity)
 
     if (available <= existingQuantity) {
-      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      message.warning(t('messages.cartLimitReached', { max: CART_MAX_ITEMS }))
       return
     }
 
     const addable = Math.min(quantity, available - existingQuantity)
     if (addable <= 0) {
-      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      message.warning(t('messages.cartLimitReached', { max: CART_MAX_ITEMS }))
       return
     }
 
@@ -184,14 +266,21 @@ export default function ProductDetailPage() {
         quantity: addable,
       }),
     )
-    const messageText = addable < quantity ? '部分数量未添加，已达到购物车上限' : '已加入购物车'
-    message.success(messageText)
+    const messageText =
+      addable < quantity
+        ? t('messages.cartPartialAdd')
+        : t('messages.cartAdded')
+    if (addable < quantity) {
+      message.warning(messageText)
+    } else {
+      message.success(messageText)
+    }
   }
 
   const handleBuyNow = () => {
     if (!product || !matchedSku || isOutOfStock) return
     if (!selectedAddress) {
-      message.warning('请先选择收货地址')
+      message.warning(t('messages.addressSelectPrompt'))
       setAddressModalOpen(true)
       return
     }
@@ -215,7 +304,7 @@ export default function ProductDetailPage() {
         paymentMethod: 'wechat',
       }),
     )
-    message.success('已创建订单，可前往订单中心查看')
+    message.success(t('messages.orderCreated'))
     navigate('/account/orders')
   }
 
@@ -223,12 +312,12 @@ export default function ProductDetailPage() {
     try {
       const values = await addressForm.validateFields()
       if (!values.region) {
-        message.error('请选择完整的省市区信息')
+        message.error(t('messages.addressRegionRequired'))
         return
       }
 
-      if (addresses.length >= 25) {
-        message.warning('地址数量已达上限（25 个）')
+      if (addresses.length >= ADDRESS_MAX) {
+        message.warning(t('messages.addressLimitReached', { max: ADDRESS_MAX }))
         return
       }
 
@@ -245,7 +334,7 @@ export default function ProductDetailPage() {
           isDefault: values.isDefault ?? false,
         }),
       )
-      message.success('新增地址成功')
+      message.success(t('messages.addressSaved'))
       addressForm.resetFields()
       setAddingAddress(false)
     } catch (error) {
@@ -253,18 +342,27 @@ export default function ProductDetailPage() {
     }
   }
 
-  const handleReviewSubmit = async (values: { rating: number; content: string; photos?: string }) => {
-    if (!auth.user) return
-    const photos = values.photos
-      ? values.photos
-          .split(',')
-          .map((url) => url.trim())
-          .filter(Boolean)
+  const handleReviewSubmit = async (values: { rating: number; content: string }) => {
+    const user = auth.user
+    if (!user) return
+    const photos = reviewUploads.length
+      ? (
+          await Promise.all(
+            reviewUploads.map(async (file) => {
+              if (file.url) return file.url
+              if (file.thumbUrl) return file.thumbUrl
+              if (file.originFileObj) {
+                return await fileToBase64(file.originFileObj as RcFile)
+              }
+              return undefined
+            }),
+          )
+        ).filter((url): url is string => Boolean(url))
       : undefined
     const newReview: ProductReview = {
       id: `local-${Date.now()}`,
-      userId: auth.user.id,
-      userName: auth.user.fullName,
+      userId: user.id,
+      userName: user.fullName,
       rating: values.rating,
       content: values.content,
       createdAt: new Date().toISOString(),
@@ -272,7 +370,8 @@ export default function ProductDetailPage() {
     }
     setReviews((previous) => [newReview, ...previous])
     reviewForm.resetFields()
-    message.success('感谢您的评价')
+    setReviewUploads([])
+    message.success(t('messages.reviewThanks'))
   }
 
   if (!productId || isError) {
@@ -280,11 +379,11 @@ export default function ProductDetailPage() {
       <div className="page-container product-detail-page">
         <Result
           status="404"
-          title="未找到该商品"
-          subTitle="请检查链接是否正确，或返回商品列表。"
+          title={t('pages.productDetail.notFoundTitle')}
+          subTitle={t('pages.productDetail.notFoundDescription')}
           extra={
             <Button type="primary" onClick={() => navigate('/products')}>
-              返回商品列表
+              {t('pages.productDetail.backToList')}
             </Button>
           }
         />
@@ -308,7 +407,7 @@ export default function ProductDetailPage() {
     <div className="page-container product-detail-page">
       <div className="product-detail__header">
         <Button type="link" onClick={() => navigate(-1)}>
-          返回
+          {t('pages.productDetail.back')}
         </Button>
       </div>
 
@@ -330,10 +429,12 @@ export default function ProductDetailPage() {
             <Text className="product-detail__price">
               {formatCurrency(displayPrice, product.currency)}
             </Text>
-            {ratingText ? (
+            {totalReviewCount > 0 || averageRating > 0 ? (
               <div className="product-detail__rating">
-                <Rate allowHalf disabled value={reviews.length ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : product.rating ?? 0} />
-                <Text type="secondary">{ratingText}</Text>
+                <Rate allowHalf disabled value={averageRating} />
+                <Text type="secondary">
+                  {averageRating.toFixed(1)} · {t('pages.productDetail.reviewsTotal', { count: totalReviewCount })}
+                </Text>
               </div>
             ) : null}
           </div>
@@ -353,9 +454,9 @@ export default function ProductDetailPage() {
                         <Tag.CheckableTag
                           key={value}
                           checked={selectedAttributes[attribute.name] === value}
-                          disabled={!available}
-                          onChange={() => {
-                            if (!available) return
+                          aria-disabled={!available}
+                          onChange={(checked) => {
+                            if (!available || !checked) return
                             setSelectedAttributes((previous) => ({
                               ...previous,
                               [attribute.name]: value,
@@ -374,16 +475,19 @@ export default function ProductDetailPage() {
 
           <div className="product-detail__stock">
             <Text type={isOutOfStock ? 'danger' : 'secondary'}>
-              {isOutOfStock ? '库存不足' : `库存：${stock} 件`}
+              {isOutOfStock
+                ? t('pages.productDetail.outOfStock')
+                : t('pages.productDetail.stockLabel', { count: stock })}
             </Text>
           </div>
 
           <div className="product-detail__quantity">
-            <Text strong>购买数量</Text>
+            <Text strong>{t('pages.productDetail.quantity')}</Text>
             <Space size={8} align="center">
               <Button
                 disabled={quantity <= 1}
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                aria-label="decrease quantity"
               >
                 -
               </Button>
@@ -391,22 +495,27 @@ export default function ProductDetailPage() {
               <Button
                 disabled={quantity >= maxQuantity}
                 onClick={() => setQuantity((current) => Math.min(maxQuantity, current + 1))}
+                aria-label="increase quantity"
               >
                 +
               </Button>
             </Space>
             {isOutOfStock ? (
-              <Text type="danger">当前规格暂时缺货</Text>
+              <Text type="danger">{t('pages.productDetail.skuUnavailable')}</Text>
             ) : (
-              <Text type="secondary">库存：{stock}</Text>
+              <Text type="secondary">
+                {t('pages.productDetail.quantityInStock', { count: stock })}
+              </Text>
             )}
           </div>
 
           <div className="product-detail__address">
             <div className="product-detail__address-header">
-              <Text strong>收货地址</Text>
+              <Text strong>{t('pages.productDetail.addressTitle')}</Text>
               <Button type="link" size="small" onClick={() => setAddressModalOpen(true)}>
-                {selectedAddress ? '更换地址' : '添加地址'}
+                {selectedAddress
+                  ? t('pages.productDetail.changeAddress')
+                  : t('pages.productDetail.addAddress')}
               </Button>
             </div>
             {selectedAddress ? (
@@ -420,13 +529,13 @@ export default function ProductDetailPage() {
                 </Text>
               </div>
             ) : (
-              <Text type="secondary">尚未选择收货地址</Text>
+              <Text type="secondary">{t('pages.productDetail.noAddress')}</Text>
             )}
           </div>
 
           <div className="product-detail__actions">
             <Button size="large" onClick={handleAddToCart} disabled={!matchedSku || isOutOfStock}>
-              加入购物车
+              {t('pages.productDetail.addToCart')}
             </Button>
             <Button
               size="large"
@@ -434,7 +543,7 @@ export default function ProductDetailPage() {
               onClick={handleBuyNow}
               disabled={!matchedSku || isOutOfStock}
             >
-              立即购买
+              {t('pages.productDetail.buyNow')}
             </Button>
           </div>
         </div>
@@ -443,27 +552,19 @@ export default function ProductDetailPage() {
       <Divider style={{ margin: '32px 0 24px' }} />
 
       <section className="product-detail__reviews">
-        <Title level={4}>用户评价</Title>
+        <Title level={4}>{t('pages.productDetail.reviewsTitle')}</Title>
 
         <div className="product-detail__reviews-header">
           <div className="product-detail__reviews-summary">
-            <Rate
-              allowHalf
-              disabled
-              value={reviews.length
-                ? reviews.reduce((accumulator, review) => accumulator + review.rating, 0) / reviews.length
-                : product.rating ?? 0}
-            />
-            <Text type="secondary">共 {reviews.length || product.reviewCount || 0} 条评价</Text>
+            <Rate allowHalf disabled value={averageRating} />
+            <Text type="secondary">
+              {t('pages.productDetail.reviewsTotal', { count: totalReviewCount })}
+            </Text>
           </div>
           <Segmented
             value={reviewFilter}
             onChange={(value) => setReviewFilter(value as ReviewFilter)}
-            options={[
-              { label: '全部', value: 'all' },
-              { label: `好评 (${positiveCount})`, value: 'positive' },
-              { label: `晒图 (${photoCount})`, value: 'withPhotos' },
-            ]}
+            options={reviewFilterOptions}
           />
         </div>
 
@@ -479,7 +580,7 @@ export default function ProductDetailPage() {
                 {review.photos && review.photos.length ? (
                   <div className="product-detail__review-photos">
                     {review.photos.map((photoUrl) => (
-                      <img key={photoUrl} src={photoUrl} alt="晒单" loading="lazy" />
+                      <img key={photoUrl} src={photoUrl} alt={review.userName} loading="lazy" />
                     ))}
                   </div>
                 ) : null}
@@ -490,51 +591,73 @@ export default function ProductDetailPage() {
             ))}
           </div>
         ) : (
-          <Text type="secondary">暂无符合筛选条件的评价</Text>
+          <Text type="secondary">{t('pages.productDetail.noFilteredReviews')}</Text>
         )}
 
         {canReview ? (
           <Card className="product-detail__review-form" variant="outlined">
-            <Title level={5}>发表评价</Title>
+            <Title level={5}>{t('pages.productDetail.reviewForm.title')}</Title>
             <Form form={reviewForm} layout="vertical" onFinish={handleReviewSubmit}>
               <Form.Item
-                label="评分"
+                label={t('pages.productDetail.reviewForm.ratingLabel')}
                 name="rating"
-                rules={[{ required: true, message: '请为商品打分' }]}
+                rules={[{ required: true, message: t('pages.productDetail.reviewForm.errors.ratingRequired') }]}
               >
                 <Rate allowHalf />
               </Form.Item>
               <Form.Item
-                label="评价内容"
+                label={t('pages.productDetail.reviewForm.contentLabel')}
                 name="content"
-                rules={[{ required: true, message: '请输入评价内容' }]}
+                rules={[{ required: true, message: t('pages.productDetail.reviewForm.errors.contentRequired') }]}
               >
                 <Input.TextArea
-                  placeholder="分享使用体验，帮助更多用户~"
+                  placeholder={t('pages.productDetail.reviewForm.contentPlaceholder')}
                   autoSize={{ minRows: 3, maxRows: 5 }}
                   maxLength={300}
                   showCount
                 />
               </Form.Item>
-              <Form.Item label="晒图（可选）" name="photos">
-                <Input placeholder="输入图片 URL，多个用逗号分隔" allowClear />
+              <Form.Item label={t('pages.productDetail.reviewForm.photosLabel')}>
+                <Upload
+                  listType="picture-card"
+                  fileList={reviewUploads}
+                  onPreview={handlePreview}
+                  onRemove={handleReviewRemove}
+                  beforeUpload={handleReviewBeforeUpload}
+                >
+                  {reviewUploads.length >= MAX_REVIEW_PHOTOS ? null : uploadButton}
+                </Upload>
+                <Text type="secondary">
+                  {t('pages.productDetail.reviewForm.uploadHint', { max: MAX_REVIEW_PHOTOS })}
+                </Text>
               </Form.Item>
               <Button type="primary" htmlType="submit">
-                提交评价
+                {t('pages.productDetail.reviewForm.submit')}
               </Button>
             </Form>
           </Card>
         ) : auth.status === 'authenticated' ? (
           <Text type="secondary">
-            {hasReviewed ? '您已评价过该商品' : '完成购买后即可发表评论'}
+            {hasReviewed
+              ? t('pages.productDetail.reviewState.alreadyReviewed')
+              : t('pages.productDetail.reviewState.purchaseRequired')}
           </Text>
         ) : (
-          <Text type="secondary">登录并完成购买后可发表评论</Text>
+          <Text type="secondary">{t('pages.productDetail.reviewState.loginRequired')}</Text>
         )}
       </section>
 
       <Modal
-        title="选择收货地址"
+        open={previewOpen}
+        footer={null}
+        title={previewTitle}
+        onCancel={() => setPreviewOpen(false)}
+      >
+        {previewImage ? <img alt={previewTitle} style={{ width: '100%' }} src={previewImage} /> : null}
+      </Modal>
+
+      <Modal
+        title={t('pages.productDetail.addressModal.title')}
         open={addressModalOpen}
         onCancel={() => {
           setAddressModalOpen(false)
@@ -544,8 +667,8 @@ export default function ProductDetailPage() {
           setAddressModalOpen(false)
           setAddingAddress(false)
         }}
-        okText="完成"
-        cancelText="取消"
+        okText={t('pages.productDetail.addressModal.done')}
+        cancelText={t('pages.productDetail.addressModal.cancel')}
         destroyOnClose
       >
         <Space direction="vertical" size={16} style={{ width: '100%' }}>
@@ -566,7 +689,9 @@ export default function ProductDetailPage() {
                         {address.region} {address.city} {address.district} {address.line1}
                       </Text>
                     </div>
-                    {address.isDefault ? <Tag color="blue">默认</Tag> : null}
+                    {address.isDefault ? (
+                      <Tag color="blue">{t('pages.account.addresses.defaultTag')}</Tag>
+                    ) : null}
                   </div>
                 </Radio>
               ))}
@@ -576,50 +701,70 @@ export default function ProductDetailPage() {
           <Divider style={{ margin: '8px 0' }} />
 
           <Button type="dashed" onClick={() => setAddingAddress((previous) => !previous)}>
-            {addingAddress ? '收起新增地址' : '新增地址'}
+            {addingAddress
+              ? t('pages.productDetail.addressModal.collapseAdd')
+              : t('pages.productDetail.addressModal.toggleAdd')}
           </Button>
 
           {addingAddress ? (
             <Form form={addressForm} layout="vertical" className="product-detail__address-form">
-              <Form.Item label="地址标签" name="label" rules={[{ required: true, message: '请输入标签' }]}>
-                <Input placeholder="家 / 公司" allowClear />
+              <Form.Item
+                label={t('pages.productDetail.addressForm.label')}
+                name="label"
+                rules={[{ required: true, message: t('pages.productDetail.addressForm.errors.labelRequired') }]}
+              >
+                <Input placeholder={t('pages.productDetail.addressForm.label')} allowClear />
               </Form.Item>
               <Space size={12} style={{ width: '100%' }}>
                 <Form.Item
-                  label="收件人"
+                  label={t('pages.productDetail.addressForm.recipient')}
                   name="recipient"
-                  rules={[{ required: true, message: '请输入收件人姓名' }]}
+                  rules={[{ required: true, message: t('pages.productDetail.addressForm.errors.recipientRequired') }]}
                   style={{ flex: 1 }}
                 >
                   <Input allowClear />
                 </Form.Item>
                 <Form.Item
-                  label="联系电话"
+                  label={t('pages.productDetail.addressForm.phone')}
                   name="phone"
-                  rules={[{ required: true, message: '请输入联系电话' }, { pattern: /^1[3-9]\d{9}$/, message: '请输入规范的手机号' }]}
+                  rules={[
+                    { required: true, message: t('pages.productDetail.addressForm.errors.phoneRequired') },
+                    { pattern: /^1[3-9]\d{9}$/, message: t('pages.productDetail.addressForm.errors.phoneInvalid') },
+                  ]}
                   style={{ flex: 1 }}
                 >
                   <Input allowClear />
                 </Form.Item>
               </Space>
               <Form.Item
-                label="所在地区"
+                label={t('pages.productDetail.addressForm.region')}
                 name="region"
-                rules={[{ required: true, message: '请选择所在地区' }]}
+                rules={[{ required: true, message: t('pages.productDetail.addressForm.errors.regionRequired') }]}
               >
                 <RegionCascader />
               </Form.Item>
-              <Form.Item label="详细地址" name="line1" rules={[{ required: true, message: '请输入详细地址' }]}>
+              <Form.Item
+                label={t('pages.productDetail.addressForm.line1')}
+                name="line1"
+                rules={[{ required: true, message: t('pages.productDetail.addressForm.errors.line1Required') }]}
+              >
                 <Input allowClear />
               </Form.Item>
-              <Form.Item label="邮编" name="postalCode" rules={[{ required: true, message: '请输入邮编' }, { pattern: /^\d{6}$/, message: '邮编为 6 位数字' }]}>
+              <Form.Item
+                label={t('pages.productDetail.addressForm.postalCode')}
+                name="postalCode"
+                rules={[
+                  { required: true, message: t('pages.productDetail.addressForm.errors.postalCodeRequired') },
+                  { pattern: /^\d{6}$/, message: t('pages.productDetail.addressForm.errors.postalCodeInvalid') },
+                ]}
+              >
                 <Input allowClear />
               </Form.Item>
               <Form.Item name="isDefault" valuePropName="checked">
-                <Checkbox>设为默认地址</Checkbox>
+                <Checkbox>{t('pages.productDetail.addressForm.isDefault')}</Checkbox>
               </Form.Item>
               <Button type="primary" block onClick={handleAddAddress}>
-                保存地址
+                {t('pages.productDetail.addressForm.save')}
               </Button>
             </Form>
           ) : null}

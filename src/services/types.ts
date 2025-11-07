@@ -203,7 +203,7 @@ export interface CartItem {
   quantity: number
 }
 
-export type OrderStatus = 'pending' | 'processing' | 'fulfilled' | 'delivered'
+export type OrderStatus = 'pending' | 'processing' | 'fulfilled' | 'delivered' | 'cancelled'
 
 export interface OrderItem {
   productId: string
@@ -224,4 +224,21 @@ export interface Order {
   paymentMethod: 'wechat' | 'alipay' | 'card'
   address: Address
   items: OrderItem[]
+}
+
+export type AfterSaleType = 'refund' | 'exchange' | 'support'
+
+export type AfterSaleStatus = 'pending' | 'in_review' | 'approved' | 'rejected' | 'completed'
+
+export interface AfterSaleRequest {
+  id: string
+  orderId: string
+  type: AfterSaleType
+  reason: string
+  description?: string
+  contact?: string
+  attachments?: string[]
+  status: AfterSaleStatus
+  createdAt: string
+  updatedAt: string
 }

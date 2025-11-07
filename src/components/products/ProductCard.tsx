@@ -2,6 +2,7 @@ import { Button, Card, Rate, Tag, Typography, message } from 'antd'
 import { ShoppingCartOutlined } from '@ant-design/icons'
 import { useMemo, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import type { Product } from '../../services/types'
 import { CART_MAX_ITEMS, addItem } from '../../store/slices/cartSlice'
@@ -24,6 +25,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector((state) => state.cart.items)
+  const { t } = useTranslation()
 
   const cartTotal = useMemo(
     () => cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0),
@@ -40,13 +42,13 @@ export function ProductCard({ product }: ProductCardProps) {
     const available = CART_MAX_ITEMS - (cartTotal - existingQuantity)
 
     if (available <= existingQuantity) {
-      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      message.warning(t('messages.cartLimitReached', { max: CART_MAX_ITEMS }))
       return
     }
 
     const addable = Math.max(0, Math.min(1, available - existingQuantity))
     if (addable <= 0) {
-      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      message.warning(t('messages.cartLimitReached', { max: CART_MAX_ITEMS }))
       return
     }
 
@@ -54,7 +56,7 @@ export function ProductCard({ product }: ProductCardProps) {
       addItem({
         productId: product.id,
         skuId,
-        skuLabel: '默认规格',
+        skuLabel: t('components.productCard.defaultSku'),
         name: product.name,
         imageUrl: product.imageUrl,
         unitPrice: product.price,
@@ -62,7 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
         quantity: addable,
       }),
     )
-    message.success('已加入购物车')
+    message.success(t('messages.cartAdded'))
   }
 
   return (
@@ -116,7 +118,7 @@ export function ProductCard({ product }: ProductCardProps) {
           block
           onClick={handleQuickAdd}
         >
-          加入购物车
+          {t('components.productCard.addToCart')}
         </Button>
       </div>
     </Card>

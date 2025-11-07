@@ -5,6 +5,7 @@ import { authReducer } from './slices/authSlice'
 import { addressReducer } from './slices/addressSlice'
 import { cartReducer } from './slices/cartSlice'
 import { ordersReducer } from './slices/ordersSlice'
+import { afterSaleReducer } from './slices/afterSaleSlice'
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     address: addressReducer,
     cart: cartReducer,
     orders: ordersReducer,
+    afterSale: afterSaleReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

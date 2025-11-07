@@ -80,5 +80,3 @@ const authSlice = createSlice({
 
 export const { setCredentials, updateProfile, updateTokens, logout } = authSlice.actions
 export const authReducer = authSlice.reducer
-
-export type { AuthState }

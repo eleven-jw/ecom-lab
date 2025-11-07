@@ -1,4 +1,5 @@
 import { Button, Card, Empty, Popconfirm, Space, Tag, Typography, message } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 import type { Address } from '../../../services/types'
 
@@ -21,8 +22,9 @@ export function AddressList({
   onDelete,
   onSetDefault,
 }: AddressListProps) {
+  const { t } = useTranslation()
   if (!addresses.length) {
-    return <Empty description="暂无地址，点击右上方按钮可新增" />
+    return <Empty description={t('pages.account.addresses.empty')} />
   }
 
   return (
@@ -39,8 +41,8 @@ export function AddressList({
             <div className="address-card__header">
               <Space size={12}>
                 <Text strong>{address.label}</Text>
-                {address.isDefault ? <Tag color="blue">默认</Tag> : null}
-                {isSelected ? <Tag color="green">当前选择</Tag> : null}
+                {address.isDefault ? <Tag color="blue">{t('pages.account.addresses.defaultTag')}</Tag> : null}
+                {isSelected ? <Tag color="green">{t('pages.account.addresses.selected')}</Tag> : null}
               </Space>
               <Space size={8}>
                 {!address.isDefault ? (
@@ -52,7 +54,7 @@ export function AddressList({
                       onSetDefault(address.id)
                     }}
                   >
-                    设为默认
+                    {t('pages.account.addresses.setDefault')}
                   </Button>
                 ) : null}
                 <Button
@@ -63,16 +65,16 @@ export function AddressList({
                     onEdit(address)
                   }}
                 >
-                  编辑
+                  {t('common.edit')}
                 </Button>
                 <Popconfirm
-                  title="确定删除该地址吗？"
-                  okText="删除"
-                  cancelText="取消"
+                  title={t('pages.account.addresses.deleteConfirm')}
+                  okText={t('pages.account.addresses.deleteConfirmOk')}
+                  cancelText={t('pages.account.addresses.deleteConfirmCancel')}
                   onConfirm={(event) => {
                     event?.stopPropagation()
                     onDelete(address.id)
-                    message.success('已删除地址')
+                    message.success(t('messages.addressDeleted'))
                   }}
                   onCancel={(event) => event?.stopPropagation()}
                 >
@@ -82,7 +84,7 @@ export function AddressList({
                     danger
                     onClick={(event) => event.stopPropagation()}
                   >
-                    删除
+                    {t('common.delete')}
                   </Button>
                 </Popconfirm>
               </Space>

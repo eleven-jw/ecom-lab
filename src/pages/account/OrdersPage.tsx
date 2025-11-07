@@ -1,35 +1,55 @@
-import { Card, Divider, Empty, List, Segmented, Space, Tag, Typography } from 'antd'
+import { Button, Card, Divider, Empty, List, Popconfirm, Segmented, Space, Tag, Typography, message } from 'antd'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 import type { OrderStatus } from '../../services/types'
-import { useAppSelector } from '../../store/hooks'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { cancelOrder, updateOrderStatus } from '../../store/slices/ordersSlice'
 import './OrdersPage.css'
 
-const statusSegments: Array<{ label: string; value: OrderStatus | 'all' }> = [
-  { label: '全部', value: 'all' },
-  { label: '待处理', value: 'pending' },
-  { label: '处理中', value: 'processing' },
-  { label: '已发货', value: 'fulfilled' },
-  { label: '已送达', value: 'delivered' },
-]
+const statusColors: Record<OrderStatus, string> = {
+  pending: 'orange',
+  processing: 'blue',
+  fulfilled: 'geekblue',
+  delivered: 'green',
+  cancelled: 'red',
+}
 
-const statusMeta: Record<OrderStatus, { label: string; color: string }> = {
-  pending: { label: '待付款', color: 'orange' },
-  processing: { label: '备货中', color: 'blue' },
-  fulfilled: { label: '运输中', color: 'geekblue' },
-  delivered: { label: '已送达', color: 'green' },
+const formatCurrency = (amount: number, currency: string) => {
+  const symbol = currency === 'CNY' ? '¥' : currency === 'USD' ? '$' : currency
+  return `${symbol}${amount}`
 }
 
 export default function OrdersPage() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const orders = useAppSelector((state) => state.orders.orders)
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all')
+
+  const statusSegments = useMemo(
+    () => [
+      { label: t('pages.account.orders.tabs.all'), value: 'all' },
+      { label: t('pages.account.orders.tabs.pending'), value: 'pending' as const },
+      { label: t('pages.account.orders.tabs.processing'), value: 'processing' as const },
+      { label: t('pages.account.orders.tabs.fulfilled'), value: 'fulfilled' as const },
+      { label: t('pages.account.orders.tabs.delivered'), value: 'delivered' as const },
+      { label: t('pages.account.orders.tabs.cancelled'), value: 'cancelled' as const },
+    ],
+    [t],
+  )
 
   const filteredOrders = useMemo(() => {
     if (statusFilter === 'all') return orders
     return orders.filter((order) => order.status === statusFilter)
   }, [orders, statusFilter])
+
+  const nextStatusMap: Partial<Record<OrderStatus, OrderStatus>> = {
+    pending: 'processing',
+    processing: 'fulfilled',
+    fulfilled: 'delivered',
+  }
 
   return (
     <div className="page-container orders-page">
@@ -37,7 +57,7 @@ export default function OrdersPage() {
         <div>
           <Typography.Title level={4}>{t('pages.account.orders.title')}</Typography.Title>
           <Typography.Text type="secondary">
-            共 {filteredOrders.length} 笔订单
+            {t('pages.account.orders.total', { count: filteredOrders.length })}
           </Typography.Text>
         </div>
         <Segmented
@@ -53,18 +73,24 @@ export default function OrdersPage() {
           grid={{ gutter: 16, column: 1 }}
           dataSource={filteredOrders}
           renderItem={(order) => {
-            const meta = statusMeta[order.status]
+            const statusLabel = t(`statuses.order.${order.status}`)
+            const canCancel = order.status !== 'delivered' && order.status !== 'cancelled'
+            const nextStatus = nextStatusMap[order.status]
             return (
               <List.Item key={order.id}>
                 <Card className="orders-page__card" variant="borderless">
                   <div className="orders-page__card-header">
                     <Space size={12} wrap>
-                      <Typography.Text strong>订单号：{order.id}</Typography.Text>
+                      <Typography.Text strong>
+                        {t('pages.account.orders.labels.orderNumber', { id: order.id })}
+                      </Typography.Text>
                       <Typography.Text type="secondary">
-                        下单时间：{new Date(order.createdAt).toLocaleString()}
+                        {t('pages.account.orders.labels.placedAt', {
+                          date: new Date(order.createdAt).toLocaleString(),
+                        })}
                       </Typography.Text>
                     </Space>
-                    <Tag color={meta?.color}>{meta?.label}</Tag>
+                    <Tag color={statusColors[order.status]}>{statusLabel}</Tag>
                   </div>
 
                   <div className="orders-page__items">
@@ -73,12 +99,15 @@ export default function OrdersPage() {
                         <img src={item.imageUrl} alt={item.name} loading="lazy" />
                         <div className="orders-page__item-meta">
                           <Typography.Text strong>{item.name}</Typography.Text>
-                          <Typography.Text type="secondary">规格：{item.skuLabel}</Typography.Text>
-                          <Typography.Text type="secondary">数量：{item.quantity}</Typography.Text>
+                          <Typography.Text type="secondary">
+                            {t('pages.account.orders.labels.specification', { value: item.skuLabel })}
+                          </Typography.Text>
+                          <Typography.Text type="secondary">
+                            {t('pages.account.orders.labels.quantity', { value: item.quantity })}
+                          </Typography.Text>
                         </div>
                         <Typography.Text strong>
-                          {item.currency === 'CNY' ? '¥' : item.currency}
-                          {item.price}
+                          {formatCurrency(item.price, item.currency)}
                         </Typography.Text>
                       </div>
                     ))}
@@ -88,23 +117,73 @@ export default function OrdersPage() {
 
                   <div className="orders-page__footer">
                     <div>
-                      <Typography.Text type="secondary">配送至</Typography.Text>
+                      <Typography.Text type="secondary">
+                        {t('pages.account.orders.labels.shipTo')}
+                      </Typography.Text>
                       <Typography.Text>
                         {order.address.region} {order.address.city} {order.address.district} {order.address.line1}
                       </Typography.Text>
                     </div>
                     <Typography.Text strong>
-                      合计：{order.currency === 'CNY' ? '¥' : order.currency}
-                      {order.totalAmount}
+                      {t('pages.account.orders.labels.total', {
+                        amount: formatCurrency(order.totalAmount, order.currency),
+                      })}
                     </Typography.Text>
                   </div>
+
+                  <Divider style={{ margin: '12px 0' }} />
+
+                  <Space size={12} wrap>
+                    {canCancel ? (
+                      <Popconfirm
+                        title={t('pages.account.orders.actions.cancel')}
+                        okText={t('common.confirm')}
+                        cancelText={t('common.cancel')}
+                        onConfirm={() => {
+                          dispatch(cancelOrder(order.id))
+                          message.success(t('messages.orderCancelled'))
+                        }}
+                      >
+                        <Button type="link" danger>
+                          {t('pages.account.orders.actions.cancel')}
+                        </Button>
+                      </Popconfirm>
+                    ) : null}
+
+                    {nextStatus ? (
+                      <Button
+                        type="link"
+                        onClick={() => {
+                          dispatch(updateOrderStatus({ id: order.id, status: nextStatus }))
+                          message.success(t('messages.orderStatusUpdated'))
+                        }}
+                      >
+                        {t(
+                          `pages.account.orders.actions.${
+                            nextStatus === 'processing'
+                              ? 'markProcessing'
+                              : nextStatus === 'fulfilled'
+                                ? 'markFulfilled'
+                                : 'markDelivered'
+                          }`,
+                        )}
+                      </Button>
+                    ) : null}
+
+                    <Button
+                      type="link"
+                      onClick={() => navigate('/account/after-sale', { state: { orderId: order.id } })}
+                    >
+                      {t('pages.account.orders.actions.requestAfterSale')}
+                    </Button>
+                  </Space>
                 </Card>
               </List.Item>
             )
           }}
         />
       ) : (
-        <Empty description="暂无相关订单" style={{ padding: '64px 0' }} />
+        <Empty description={t('pages.account.orders.empty')} style={{ padding: '64px 0' }} />
       )}
     </div>
   )

@@ -59,10 +59,17 @@ export const ordersSlice = createSlice({
       const order: Order = {
         id: nanoid(),
         createdAt: new Date().toISOString(),
-        status: 'processing',
+        status: 'pending',
         ...action.payload,
       }
       state.orders.unshift(order)
+    },
+    cancelOrder(state, action: PayloadAction<string>) {
+      const order = state.orders.find((candidate) => candidate.id === action.payload)
+      if (!order || order.status === 'delivered' || order.status === 'cancelled') {
+        return
+      }
+      order.status = 'cancelled'
     },
     updateOrderStatus(state, action: PayloadAction<{ id: string; status: OrderStatus }>) {
       const order = state.orders.find((candidate) => candidate.id === action.payload.id)
@@ -73,5 +80,5 @@ export const ordersSlice = createSlice({
   },
 })
 
-export const { addOrder, updateOrderStatus } = ordersSlice.actions
+export const { addOrder, updateOrderStatus, cancelOrder } = ordersSlice.actions
 export const ordersReducer = ordersSlice.reducer

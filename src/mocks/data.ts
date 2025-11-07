@@ -673,8 +673,20 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'attribute
   },
   'prod-roborock-mop': {
     skus: [
-      { id: 'prod-roborock-mop-standard', label: '标准版', price: 3299, stock: 22 },
-      { id: 'prod-roborock-mop-plus', label: 'Plus 自清洁版', price: 3899, stock: 14 },
+      {
+        id: 'prod-roborock-mop-standard',
+        skuLabel: '标准版',
+        price: 3299,
+        stock: 22,
+        attributes: { 版本: '标准版' },
+      },
+      {
+        id: 'prod-roborock-mop-plus',
+        skuLabel: 'Plus 自清洁版',
+        price: 3899,
+        stock: 14,
+        attributes: { 版本: 'Plus 自清洁版' },
+      },
     ],
     reviews: [
       {
@@ -773,8 +785,20 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'attribute
   },
   'prod-minimalist-backpack': {
     skus: [
-      { id: 'prod-mini-backpack-black', label: 'Black', price: 189, stock: 12 },
-      { id: 'prod-mini-backpack-tan', label: 'Tan', price: 189, stock: 5 },
+      {
+        id: 'prod-mini-backpack-black',
+        skuLabel: 'Black',
+        price: 189,
+        stock: 12,
+        attributes: { color: 'Black' },
+      },
+      {
+        id: 'prod-mini-backpack-tan',
+        skuLabel: 'Tan',
+        price: 189,
+        stock: 5,
+        attributes: { color: 'Tan' },
+      },
     ],
     reviews: [
       {
@@ -789,8 +813,20 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'attribute
   },
   'prod-wireless-headphones': {
     skus: [
-      { id: 'prod-wireless-headphones-gray', label: 'Graphite', price: 249, stock: 18 },
-      { id: 'prod-wireless-headphones-silver', label: 'Silver', price: 249, stock: 9 },
+      {
+        id: 'prod-wireless-headphones-gray',
+        skuLabel: 'Graphite',
+        price: 249,
+        stock: 18,
+        attributes: { color: 'Graphite' },
+      },
+      {
+        id: 'prod-wireless-headphones-silver',
+        skuLabel: 'Silver',
+        price: 249,
+        stock: 9,
+        attributes: { color: 'Silver' },
+      },
     ],
     reviews: [
       {
@@ -805,8 +841,20 @@ const productDetailExtras: Record<string, Partial<Pick<ProductDetail, 'attribute
   },
   'prod-glow-serum': {
     skus: [
-      { id: 'prod-glow-serum-30', label: '30ml', price: 59, stock: 40 },
-      { id: 'prod-glow-serum-50', label: '50ml', price: 79, stock: 25 },
+      {
+        id: 'prod-glow-serum-30',
+        skuLabel: '30ml',
+        price: 59,
+        stock: 40,
+        attributes: { 容量: '30ml' },
+      },
+      {
+        id: 'prod-glow-serum-50',
+        skuLabel: '50ml',
+        price: 79,
+        stock: 25,
+        attributes: { 容量: '50ml' },
+      },
     ],
     reviews: [
       {

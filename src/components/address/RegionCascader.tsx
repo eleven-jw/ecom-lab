@@ -1,5 +1,6 @@
+import type { CSSProperties } from 'react'
 import { Cascader } from 'antd'
-import type { CascaderProps } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 import { regions } from '../../data/regions'
 import type { RegionNode } from '../../data/regions'
@@ -10,9 +11,12 @@ export interface RegionValue {
   district: string
 }
 
-interface RegionCascaderProps extends Omit<CascaderProps, 'options' | 'onChange' | 'value'> {
+interface RegionCascaderProps {
   value?: RegionValue
   onChange?: (value: RegionValue | undefined) => void
+  disabled?: boolean
+  className?: string
+  style?: CSSProperties
 }
 
 const findValuePath = (nodeList: RegionNode[], target: RegionValue): string[] | undefined => {
@@ -30,16 +34,19 @@ const findValuePath = (nodeList: RegionNode[], target: RegionValue): string[] | 
   return undefined
 }
 
-export function RegionCascader({ value, onChange, ...props }: RegionCascaderProps) {
+export function RegionCascader({ value, onChange, disabled, className, style }: RegionCascaderProps) {
+  const { t } = useTranslation()
   const cascaderValue = value ? findValuePath(regions, value) : undefined
 
   return (
     <Cascader
-      {...props}
       options={regions}
-      placeholder="请选择省 / 市 / 区"
+      placeholder={t('components.regionCascader.placeholder')}
       showSearch
       allowClear
+      disabled={disabled}
+      className={className}
+      style={style}
       value={cascaderValue}
       onChange={(values, selectedOptions) => {
         if (!values || values.length !== 3 || !selectedOptions) {

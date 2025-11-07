@@ -78,12 +78,13 @@ export const addressSlice = createSlice({
       state.selectedAddressId = action.payload
     },
     updateAddress(state, action: PayloadAction<{ id: string } & AddAddressPayload>) {
-      const index = state.addresses.findIndex((address) => address.id === action.payload.id)
+      const { id, ...payload } = action.payload
+      const index = state.addresses.findIndex((address) => address.id === id)
       if (index === -1) return
 
       const updated: Address = {
-        id: action.payload.id,
-        ...action.payload,
+        id,
+        ...payload,
       }
       const wasDefault = state.addresses[index].isDefault
 

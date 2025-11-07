@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card, Progress, Typography, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import type { HomeFlashSale } from '../../services/types'
 
@@ -41,6 +42,7 @@ export function FlashSaleSection({ flashSale }: FlashSaleSectionProps) {
 
   const [remaining, setRemaining] = useState<RemainingTime>(calculateRemaining(flashSale.endsAt))
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   useEffect(() => {
     setRemaining(calculateRemaining(flashSale.endsAt))
@@ -54,13 +56,14 @@ export function FlashSaleSection({ flashSale }: FlashSaleSectionProps) {
   }, [flashSale.endsAt])
 
   const headline = useMemo(() => {
-    if (remaining.finished) return '秒杀已结束'
-    return `距结束还剩 ${remaining.hours}:${remaining.minutes}:${remaining.seconds}`
-  }, [remaining])
+    if (remaining.finished) return t('components.flashSale.ended')
+    const time = `${remaining.hours}:${remaining.minutes}:${remaining.seconds}`
+    return t('components.flashSale.countdown', { time })
+  }, [remaining, t])
 
   return (
     <Card
-      title={<span className="flash-sale__title">ecom-lab秒杀</span>}
+      title={<span className="flash-sale__title">{t('components.flashSale.title')}</span>}
       extra={<Typography.Text type="danger">{headline}</Typography.Text>}
       variant="borderless"
       className="flash-sale"
@@ -68,7 +71,7 @@ export function FlashSaleSection({ flashSale }: FlashSaleSectionProps) {
       <div className="flash-sale__grid">
         {flashSale.items.map((item) => {
           const discount = Math.max(item.originalPrice - item.salePrice, 0)
-          const discountLabel = discount > 0 ? `立省 ¥${discount}` : undefined
+          const discountLabel = discount > 0 ? t('components.flashSale.save', { amount: `¥${discount}` }) : undefined
 
           return (
             <Card

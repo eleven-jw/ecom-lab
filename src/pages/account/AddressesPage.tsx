@@ -16,6 +16,8 @@ import {
 } from '../../store/slices/addressSlice'
 import './AddressesPage.css'
 
+const ADDRESS_MAX = 25
+
 export default function AddressesPage() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -25,7 +27,7 @@ export default function AddressesPage() {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
   const [form] = Form.useForm<AddressFormValues>()
 
-  const maxReached = addresses.length >= 25
+  const maxReached = addresses.length >= ADDRESS_MAX
 
   const handleAdd = () => {
     setEditingAddress(null)
@@ -55,7 +57,7 @@ export default function AddressesPage() {
     try {
       const values = (await form.validateFields()) as AddressFormValues
       if (!values.region) {
-        message.error('请选择完整的省市区信息')
+        message.error(t('messages.addressRegionRequired'))
         return
       }
 
@@ -73,14 +75,14 @@ export default function AddressesPage() {
 
       if (editingAddress) {
         dispatch(updateAddress({ id: editingAddress.id, ...payload }))
-        message.success('已更新地址')
+        message.success(t('messages.addressUpdated'))
       } else {
         if (maxReached) {
-          message.warning('地址数量已达上限（25 个）')
+          message.warning(t('messages.addressLimitReached', { max: ADDRESS_MAX }))
           return
         }
         dispatch(addAddress(payload))
-        message.success('已新增地址')
+        message.success(t('messages.addressSaved'))
       }
 
       setDrawerOpen(false)
@@ -97,7 +99,7 @@ export default function AddressesPage() {
 
   const handleSetDefault = (id: string) => {
     dispatch(setDefaultAddress(id))
-    message.success('已设为默认地址')
+    message.success(t('messages.addressMarkedDefault'))
   }
 
   const handleSelect = (id: string) => {
@@ -109,10 +111,12 @@ export default function AddressesPage() {
       <div className="addresses-page__header">
         <div>
           <Typography.Title level={4}>{t('pages.account.addresses.title')}</Typography.Title>
-          <Typography.Text type="secondary">{`已保存 ${addresses.length}/25 个地址`}</Typography.Text>
+          <Typography.Text type="secondary">
+            {t('pages.account.addresses.subtitle', { count: addresses.length, max: ADDRESS_MAX })}
+          </Typography.Text>
         </div>
         <Button type="primary" disabled={maxReached} onClick={handleAdd}>
-          新增地址
+          {t('pages.account.addresses.add')}
         </Button>
       </div>
 
@@ -126,7 +130,7 @@ export default function AddressesPage() {
       />
 
       <Drawer
-        title={editingAddress ? '编辑地址' : '新增地址'}
+        title={editingAddress ? t('pages.account.addresses.edit') : t('pages.account.addresses.new')}
         open={drawerOpen}
         onClose={() => {
           setDrawerOpen(false)
@@ -143,10 +147,10 @@ export default function AddressesPage() {
                 form.resetFields()
               }}
             >
-              取消
+              {t('common.cancel')}
             </Button>
             <Button type="primary" onClick={handleSubmit}>
-              保存
+              {t('common.save')}
             </Button>
           </Space>
         }

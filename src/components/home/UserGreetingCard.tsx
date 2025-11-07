@@ -1,25 +1,31 @@
 import { Button, Card, Divider, Typography } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { useAppSelector } from '../../store/hooks'
 
 export function UserGreetingCard() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const user = useAppSelector((state) => state.auth.user)
 
   const isAuthenticated = Boolean(user)
+  const perks = t('components.userGreeting.perks', { returnObjects: true }) as unknown
+  const perkList = Array.isArray(perks) ? perks : []
 
   return (
     <Card className="user-greeting-card" variant="borderless">
-      <Typography.Text type="secondary">你好，</Typography.Text>
+      <Typography.Text type="secondary">{t('components.userGreeting.hello')}</Typography.Text>
       <Typography.Title level={5} style={{ marginTop: 4 }}>
-        {isAuthenticated ? user?.fullName ?? user?.email : '欢迎来到ecom-lab风格体验'}
+        {isAuthenticated
+          ? user?.fullName ?? user?.email
+          : t('components.userGreeting.welcome')}
       </Typography.Title>
 
       <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
         {isAuthenticated
-          ? '立即查看你的订单和会员权益。'
-          : '登录后可同步收藏、订单与会员权益。'}
+          ? t('components.userGreeting.authenticatedSubtitle')
+          : t('components.userGreeting.guestSubtitle')}
       </Typography.Paragraph>
 
       <Button
@@ -27,7 +33,9 @@ export function UserGreetingCard() {
         block
         onClick={() => navigate(isAuthenticated ? '/account' : '/auth/login')}
       >
-        {isAuthenticated ? '进入我的ecom-lab' : '立即登录'}
+        {isAuthenticated
+          ? t('components.userGreeting.primaryCtaAuthenticated')
+          : t('components.userGreeting.primaryCtaGuest')}
       </Button>
 
       {!isAuthenticated ? (
@@ -36,18 +44,18 @@ export function UserGreetingCard() {
           style={{ marginTop: 12 }}
           onClick={() => navigate('/auth/register')}
         >
-          免费注册
+          {t('components.userGreeting.secondaryCta')}
         </Button>
       ) : null}
 
       <Divider style={{ margin: '16px 0' }} />
 
       <div className="user-greeting-card__benefits">
-        <Typography.Text strong>会员专享</Typography.Text>
+        <Typography.Text strong>{t('components.userGreeting.perksTitle')}</Typography.Text>
         <ul>
-          <li>运费券包月领取</li>
-          <li>专属客服随时在线</li>
-          <li>精选神券每日更新</li>
+          {perkList.map((perk) => (
+            <li key={perk}>{perk}</li>
+          ))}
         </ul>
       </div>
     </Card>

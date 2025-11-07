@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Checkbox, Form, Input, message, Space } from 'antd'
 import type { FormInstance } from 'antd/es/form'
+import { useTranslation } from 'react-i18next'
 
 import type { Address } from '../../services/types'
 import { RegionCascader } from './RegionCascader'
@@ -24,10 +25,8 @@ interface AddressFormProps {
   initialValues?: Partial<Address>
 }
 
-const phoneRule = [{ pattern: /^1[3-9]\d{9}$/, message: '请输入规范的中国大陆手机号' }]
-const postalRule = [{ pattern: /^\d{6}$/, message: '请输入 6 位数字邮政编码' }]
-
 export function AddressForm({ form, initialValues }: AddressFormProps) {
+  const { t } = useTranslation()
   const cascaderValue = useMemo(() => {
     if (!initialValues?.region || !initialValues?.city || !initialValues?.district) {
       return undefined
@@ -38,6 +37,26 @@ export function AddressForm({ form, initialValues }: AddressFormProps) {
       district: initialValues.district,
     }
   }, [initialValues?.region, initialValues?.city, initialValues?.district])
+
+  const phoneRule = useMemo(
+    () => [
+      {
+        pattern: /^1[3-9]\d{9}$/,
+        message: t('components.addressForm.errors.phoneInvalid'),
+      },
+    ],
+    [t],
+  )
+
+  const postalRule = useMemo(
+    () => [
+      {
+        pattern: /^\d{6}$/,
+        message: t('components.addressForm.errors.postalCodeInvalid'),
+      },
+    ],
+    [t],
+  )
 
   return (
     <Form
@@ -52,51 +71,63 @@ export function AddressForm({ form, initialValues }: AddressFormProps) {
         postalCode: initialValues?.postalCode,
         isDefault: initialValues?.isDefault,
       }}
-      onFinishFailed={() => message.error('请完善地址信息后再保存')}
+      onFinishFailed={() => message.error(t('components.addressForm.submitError'))}
     >
       <Form.Item
-        label="地址标签"
+        label={t('components.addressForm.label')}
         name="label"
-        rules={[{ required: true, message: '请填写方便识别的地址标签' }]}
+        rules={[{ required: true, message: t('components.addressForm.errors.labelRequired') }]}
       >
-        <Input placeholder="家 / 公司 / 朋友等" allowClear maxLength={10} />
+        <Input
+          placeholder={t('components.addressForm.labelPlaceholder')}
+          allowClear
+          maxLength={10}
+        />
       </Form.Item>
 
       <Space size={12} style={{ width: '100%' }}>
         <Form.Item
-          label="收件人"
+          label={t('components.addressForm.recipient')}
           name="recipient"
-          rules={[{ required: true, message: '请输入收件人姓名' }]}
+          rules={[{ required: true, message: t('components.addressForm.errors.recipientRequired') }]}
           style={{ flex: 1 }}
         >
-          <Input placeholder="张三" allowClear maxLength={20} />
+          <Input
+            placeholder={t('components.addressForm.recipientPlaceholder')}
+            allowClear
+            maxLength={20}
+          />
         </Form.Item>
 
         <Form.Item
-          label="联系电话"
+          label={t('components.addressForm.phone')}
           name="phone"
-          rules={[{ required: true, message: '请输入联系电话' }, ...phoneRule]}
+          rules={[{ required: true, message: t('components.addressForm.errors.phoneRequired') }, ...phoneRule]}
           style={{ flex: 1 }}
         >
-          <Input placeholder="11 位手机号码" allowClear maxLength={11} />
+          <Input
+            placeholder={t('components.addressForm.phonePlaceholder')}
+            allowClear
+            maxLength={11}
+          />
         </Form.Item>
       </Space>
 
       <Form.Item
-        label="所在地区"
+        label={t('components.addressForm.region')}
         name="region"
-        rules={[{ required: true, message: '请选择完整的省 / 市 / 区信息' }]}
+        rules={[{ required: true, message: t('components.addressForm.errors.regionRequired') }]}
       >
         <RegionCascader />
       </Form.Item>
 
       <Form.Item
-        label="详细地址"
+        label={t('components.addressForm.line1')}
         name="line1"
-        rules={[{ required: true, message: '请输入详细地址信息' }]}
+        rules={[{ required: true, message: t('components.addressForm.errors.line1Required') }]}
       >
         <Input.TextArea
-          placeholder="例如：张江路 888 号 XX 大厦 XX 室"
+          placeholder={t('components.addressForm.line1Placeholder')}
           autoSize={{ minRows: 3, maxRows: 4 }}
           maxLength={120}
           allowClear
@@ -104,15 +135,19 @@ export function AddressForm({ form, initialValues }: AddressFormProps) {
       </Form.Item>
 
       <Form.Item
-        label="邮政编码"
+        label={t('components.addressForm.postalCode')}
         name="postalCode"
-        rules={[{ required: true, message: '请输入邮政编码' }, ...postalRule]}
+        rules={[{ required: true, message: t('components.addressForm.errors.postalCodeRequired') }, ...postalRule]}
       >
-        <Input placeholder="6 位邮编" allowClear maxLength={6} />
+        <Input
+          placeholder={t('components.addressForm.postalCodePlaceholder')}
+          allowClear
+          maxLength={6}
+        />
       </Form.Item>
 
       <Form.Item name="isDefault" valuePropName="checked">
-        <Checkbox>设为默认地址</Checkbox>
+        <Checkbox>{t('components.addressForm.isDefault')}</Checkbox>
       </Form.Item>
     </Form>
   )

@@ -59,29 +59,29 @@ export default function CartPage() {
     const available = CART_MAX_ITEMS - (currentTotal - targetItem.quantity)
     const nextQuantity = Math.max(1, Math.min(value, available))
     if (value > available) {
-      message.warning(`购物车最多可添加 ${CART_MAX_ITEMS} 件商品`)
+      message.warning(t('messages.cartLimitReached', { max: CART_MAX_ITEMS }))
     }
     dispatch(updateQuantity({ id, quantity: nextQuantity }))
   }
 
   const handleRemove = (id: string) => {
     dispatch(removeItem(id))
-    message.success('已移除商品')
+    message.success(t('messages.cartItemRemoved'))
   }
 
   const handleClear = () => {
     dispatch(clearCart())
-    message.success('购物车已清空')
+    message.success(t('messages.cartCleared'))
   }
 
   const handleCheckout = () => {
     if (!cartItems.length) {
-      message.info('购物车为空，无需结算')
+      message.info(t('messages.cartEmptyCheckout'))
       return
     }
 
     if (!selectedAddress) {
-      message.warning('请先选择收货地址')
+      message.warning(t('messages.addressSelectPrompt'))
       navigate('/account/addresses')
       return
     }
@@ -106,7 +106,7 @@ export default function CartPage() {
       }),
     )
     dispatch(clearCart())
-    message.success('订单已创建，可前往订单中心查看')
+    message.success(t('messages.orderCreated'))
     navigate('/account/orders')
   }
 
@@ -114,9 +114,9 @@ export default function CartPage() {
     return (
       <div className="page-container cart-page">
         <Title level={3}>{t('pages.cart.title')}</Title>
-        <Empty description="购物车空空如也，去逛逛吧" style={{ padding: '64px 0' }}>
+        <Empty description={t('pages.cart.emptyDescription')} style={{ padding: '64px 0' }}>
           <Button type="primary" onClick={() => navigate('/products')}>
-            立即选购
+            {t('pages.cart.emptyCta')}
           </Button>
         </Empty>
       </div>
@@ -130,9 +130,9 @@ export default function CartPage() {
       <div className="cart-page__layout">
         <Card className="cart-page__list" variant="outlined">
           <div className="cart-page__list-header">
-            <Text type="secondary">商品信息</Text>
+            <Text type="secondary">{t('pages.cart.itemsHeader')}</Text>
             <Button type="link" onClick={handleClear}>
-              清空购物车
+              {t('pages.cart.clear')}
             </Button>
           </div>
           <Divider style={{ margin: '12px 0' }} />
@@ -146,7 +146,9 @@ export default function CartPage() {
                   <img src={item.imageUrl} alt={item.name} loading="lazy" />
                   <div className="cart-page__item-meta">
                     <Text strong>{item.name}</Text>
-                    <Text type="secondary">规格：{item.skuLabel}</Text>
+                    <Text type="secondary">
+                      {t('pages.account.orders.labels.specification', { value: item.skuLabel })}
+                    </Text>
                   </div>
                 </div>
 
@@ -176,35 +178,35 @@ export default function CartPage() {
 
         <Space direction="vertical" size={16} className="cart-page__sidebar">
           <Card className="cart-page__summary" variant="outlined">
-            <Title level={4}>订单摘要</Title>
+            <Title level={4}>{t('pages.cart.summaryTitle')}</Title>
             <div className="cart-page__summary-row">
-              <Text type="secondary">商品数量</Text>
+              <Text type="secondary">{t('pages.cart.itemCount')}</Text>
               <Text>{totals.quantity}</Text>
             </div>
             <div className="cart-page__summary-row">
-              <Text type="secondary">商品合计</Text>
+              <Text type="secondary">{t('pages.cart.subtotal')}</Text>
               <Text strong>{formatCurrency(totals.amount, cartItems[0]?.currency ?? 'CNY')}</Text>
             </div>
             <Divider style={{ margin: '12px 0' }} />
             <div className="cart-page__summary-row">
-              <Text type="secondary">应付金额</Text>
+              <Text type="secondary">{t('pages.cart.total')}</Text>
               <Text strong className="cart-page__summary-total">
                 {formatCurrency(totals.amount, cartItems[0]?.currency ?? 'CNY')}
               </Text>
             </div>
             <Button type="primary" block size="large" onClick={handleCheckout}>
-              去结算
+              {t('pages.cart.checkout')}
             </Button>
             <Button block size="large" style={{ marginTop: 12 }} onClick={() => navigate('/products')}>
-              继续选购
+              {t('pages.cart.continue')}
             </Button>
           </Card>
 
           <Card className="cart-page__address" variant="outlined">
             <div className="cart-page__address-header">
-              <Text strong>收货地址</Text>
+              <Text strong>{t('pages.productDetail.addressTitle')}</Text>
               <Button type="link" size="small" onClick={() => navigate('/account/addresses')}>
-                管理地址
+                {t('pages.cart.manageAddress')}
               </Button>
             </div>
             {selectedAddress ? (
@@ -215,7 +217,7 @@ export default function CartPage() {
                 </Text>
               </div>
             ) : (
-              <Text type="secondary">暂无默认地址，请先添加</Text>
+              <Text type="secondary">{t('pages.cart.noDefaultAddress')}</Text>
             )}
           </Card>
         </Space>
